@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cargo --version)",
+      "Bash(rustc --version)",
+      "Bash(cargo check *)",
+      "Bash(cargo test *)",
+      "Bash(cargo run *)",
+      "Bash(cargo build *)",
+      "Bash(/home/vyofgod/Belgeler/slate-engine/target/release/slate-demo)",
+      "Bash(cargo add *)",
+      "Bash(cargo search *)",
+      "Bash(awk '{gsub\\(/\\\\./,\"\"\\); print}')"
+    ]
+  }
+}

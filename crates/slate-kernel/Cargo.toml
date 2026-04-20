@@ -1,0 +1,35 @@
+[package]
+name        = "slate-kernel"
+version.workspace    = true
+edition.workspace    = true
+rust-version.workspace = true
+license.workspace    = true
+authors.workspace    = true
+description = "Slate kernel — orchestrates Dispatcher + State store + Arena."
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "warn"
+
+[dependencies]
+slate-ais        = { workspace = true }
+slate-dispatcher = { workspace = true }
+slate-state      = { workspace = true }
+slate-arena      = { workspace = true }
+slate-render     = { workspace = true }
+slate-script     = { workspace = true }
+smallvec         = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
+
+[[bin]]
+name = "slate-demo"
+path = "src/bin/slate-demo.rs"
+
+[[bin]]
+name = "slate-pipeline"
+path = "src/bin/slate-pipeline.rs"
+
+[[bench]]
+name    = "dispatch"
+harness = false

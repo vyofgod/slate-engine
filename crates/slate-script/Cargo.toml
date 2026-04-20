@@ -1,0 +1,13 @@
+[package]
+name        = "slate-script"
+version.workspace    = true
+edition.workspace    = true
+rust-version.workspace = true
+license.workspace    = true
+authors.workspace    = true
+description = "Slate script — JS runtime bridge emitting OwnedWebCalls."
+
+[dependencies]
+boa_engine = "0.21.1"
+slate-ais        = { workspace = true }
+slate-dispatcher = { workspace = true }

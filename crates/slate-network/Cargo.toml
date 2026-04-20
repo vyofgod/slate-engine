@@ -1,0 +1,20 @@
+[package]
+name        = "slate-network"
+version.workspace    = true
+edition.workspace    = true
+rust-version.workspace = true
+license.workspace    = true
+authors.workspace    = true
+description = "Slate network — async streaming fetcher feeding the Dispatcher."
+
+[features]
+default = []
+http3   = []
+
+[dependencies]
+bytes = "1.11.1"
+futures-util = "0.3.32"
+reqwest = { version = "0.13.2", features = ["stream"] }
+slate-ais        = { workspace = true }
+slate-dispatcher = { workspace = true }
+tokio = { version = "1.52.1", features = ["rt-multi-thread", "macros", "io-util"] }

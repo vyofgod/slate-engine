@@ -1,0 +1,15 @@
+[package]
+name        = "slate-ais"
+version.workspace    = true
+edition.workspace    = true
+rust-version.workspace = true
+license.workspace    = true
+authors.workspace    = true
+description = "Slate Atomic Instruction Set — the periodic table of the web."
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "warn"
+missing_debug_implementations = "warn"
+
+[dependencies]
+smallvec = { workspace = true }
