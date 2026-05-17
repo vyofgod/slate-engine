@@ -47,6 +47,11 @@ pub struct GlyphRunId(pub u32);
 #[repr(transparent)]
 pub struct PathId(pub u32);
 
+/// Opaque handle into the image cache.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[repr(transparent)]
+pub struct ImageId(pub u32);
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum RenderPrimitive {
     /// Solid-color axis-aligned fill.
@@ -61,6 +66,18 @@ pub enum RenderPrimitive {
     /// Fill a cached Bezier path. Curves are shaped once; this primitive
     /// just references the cached result.
     FillPath { path: PathId, color: Rgba8 },
+
+    /// Draw a cached image at the specified rectangle.
+    /// The image is stretched to fit the destination rect.
+    DrawImage { image: ImageId, dest: Rect, opacity: u8 },
+
+    /// Draw a portion of a cached image (sprite/atlas support).
+    DrawImageRegion { 
+        image: ImageId, 
+        src: Rect,   // Source rectangle in image coordinates
+        dest: Rect,  // Destination rectangle on screen
+        opacity: u8 
+    },
 
     /// Push a new layer onto the compositor stack.
     PushLayer { id: LayerId, bounds: Rect },

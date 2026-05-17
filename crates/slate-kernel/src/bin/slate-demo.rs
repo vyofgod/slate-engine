@@ -17,8 +17,8 @@ const SAMPLE: &str = r#"
 
 fn main() {
     println!("╔══════════════════════════════════════════════╗");
-    println!("║  Slate Engine — Phase 1 demo                  ║");
-    println!("║  dirty web → normalize → decompose → AIS      ║");
+    println!("║  Slate Engine — Phase 1 demo                 ║");
+    println!("║  dirty web → normalize → decompose → AIS     ║");
     println!("╚══════════════════════════════════════════════╝");
     println!("\nsource HTML:{SAMPLE}");
     println!("-- AIS stream --");

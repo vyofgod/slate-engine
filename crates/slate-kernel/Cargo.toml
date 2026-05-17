@@ -6,6 +6,7 @@ rust-version.workspace = true
 license.workspace    = true
 authors.workspace    = true
 description = "Slate kernel — orchestrates Dispatcher + State store + Arena."
+default-run = "slate-demo"
 
 [lints.rust]
 unsafe_op_in_unsafe_fn = "warn"
@@ -17,6 +18,13 @@ slate-state      = { workspace = true }
 slate-arena      = { workspace = true }
 slate-render     = { workspace = true }
 slate-script     = { workspace = true }
+slate-dom        = { workspace = true }
+slate-html       = { workspace = true }
+slate-css        = { workspace = true }
+slate-layout     = { workspace = true }
+slate-rasterizer = { workspace = true }
+slate-image      = { path = "../slate-image" }
+slate-webapi     = { path = "../slate-webapi" }
 smallvec         = { workspace = true }
 
 [dev-dependencies]
@@ -29,6 +37,14 @@ path = "src/bin/slate-demo.rs"
 [[bin]]
 name = "slate-pipeline"
 path = "src/bin/slate-pipeline.rs"
+
+[[bin]]
+name = "slate-phase2"
+path = "src/bin/slate-phase2.rs"
+
+[[bin]]
+name = "slate-phase4-demo"
+path = "src/bin/slate-phase4-demo.rs"
 
 [[bench]]
 name    = "dispatch"

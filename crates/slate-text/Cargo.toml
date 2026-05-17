@@ -1,0 +1,21 @@
+[package]
+name    = "slate-text"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+slate-ais = { workspace = true }
+thiserror = { workspace = true }
+rustybuzz = "0.18"
+ttf-parser = "0.24"
+unicode-bidi = "0.3"
+unicode-linebreak = "0.1"
+unicode-segmentation = "1.12"
+ab_glyph = "0.2"
+fontdb = "0.21"
+memmap2 = "0.9"
+
+[dev-dependencies]
+criterion = { workspace = true }

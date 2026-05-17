@@ -1,18 +1,20 @@
 //! Phase 2 end-to-end demo.
 //!
+//! ```text
 //!     JS source
-//!        │  slate.createElement / slate.setStyle
-//!        ▼
+//!        |  slate.createElement / slate.setStyle
+//!        v
 //!     slate-script  (Boa + host bridge)
-//!        │  Vec<OwnedWebCall>
-//!        ▼
-//!     slate-kernel  (Dispatcher → State + AIS stream)
-//!        │  &[AtomicInstruction]
-//!        ▼
+//!        |  Vec<OwnedWebCall>
+//!        v
+//!     slate-kernel  (Dispatcher -> State + AIS stream)
+//!        |  &[AtomicInstruction]
+//!        v
 //!     slate-render  (wgpu headless, instanced draw)
-//!        │  RGBA8 bytes
-//!        ▼
+//!        |  RGBA8 bytes
+//!        v
 //!     out/frame.ppm
+//! ```
 //!
 //! Run:  `cargo run --bin slate-pipeline --release`
 

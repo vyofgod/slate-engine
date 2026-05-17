@@ -2,7 +2,7 @@
 //!
 //! `Fetcher::fetch_streaming` returns an async stream of `Bytes`
 //! chunks. The caller typically pipes each chunk through an
-//! [`IncrementalParser`] and forwards the emitted `OwnedWebCall`s
+//! incremental parser and forwards the emitted `OwnedWebCall`s
 //! to the kernel, so the first paint can occur well before the page
 //! is fully downloaded.
 

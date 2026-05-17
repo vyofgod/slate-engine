@@ -17,8 +17,13 @@ use slate_ais::{NodeId, Rect, Rgba8, Size};
 #[derive(Debug, Clone, PartialEq)]
 pub enum OwnedWebCall {
     CreateElement { node: NodeId, tag: String },
+    CreateTextNode { node: NodeId, text: String },
     AppendChild   { parent: NodeId, child: NodeId, index: u32 },
+    RemoveChild   { parent: NodeId, child: NodeId },
+    InsertBefore  { parent: NodeId, new_child: NodeId, ref_child: NodeId },
     SetAttribute  { node: NodeId, name: String, value: String },
+    RemoveAttribute { node: NodeId, name: String },
+    AddClass      { node: NodeId, class: String },
     SetInlineStyle{ node: NodeId, css: String },
     AnchorRect    { node: NodeId, rect: Rect },
 }
@@ -32,15 +37,36 @@ impl OwnedWebCall {
                 node: *node,
                 tag:  tag.as_str(),
             },
+            OwnedWebCall::CreateTextNode { node, text } => WebCall::CreateTextNode {
+                node: *node,
+                text: text.as_str(),
+            },
             OwnedWebCall::AppendChild { parent, child, index } => WebCall::AppendChild {
                 parent: *parent,
                 child:  *child,
                 index:  *index,
             },
+            OwnedWebCall::RemoveChild { parent, child } => WebCall::RemoveChild {
+                parent: *parent,
+                child:  *child,
+            },
+            OwnedWebCall::InsertBefore { parent, new_child, ref_child } => WebCall::InsertBefore {
+                parent: *parent,
+                new_child: *new_child,
+                ref_child: *ref_child,
+            },
             OwnedWebCall::SetAttribute { node, name, value } => WebCall::SetAttribute {
                 node:  *node,
                 name:  name.as_str(),
                 value: value.as_str(),
+            },
+            OwnedWebCall::RemoveAttribute { node, name } => WebCall::RemoveAttribute {
+                node: *node,
+                name: name.as_str(),
+            },
+            OwnedWebCall::AddClass { node, class } => WebCall::AddClass {
+                node: *node,
+                class: class.as_str(),
             },
             OwnedWebCall::SetInlineStyle { node, css } => WebCall::SetInlineStyle {
                 node: *node,
@@ -62,11 +88,26 @@ pub enum WebCall<'a> {
     /// so decomposition stays deterministic.
     CreateElement { node: NodeId, tag: &'a str },
 
+    /// `document.createTextNode(text)` — create a text node.
+    CreateTextNode { node: NodeId, text: &'a str },
+
     /// `parent.appendChild(child)` at a specific index.
     AppendChild { parent: NodeId, child: NodeId, index: u32 },
 
+    /// `parent.removeChild(child)` — remove a child node.
+    RemoveChild { parent: NodeId, child: NodeId },
+
+    /// `parent.insertBefore(newChild, refChild)` — insert before reference.
+    InsertBefore { parent: NodeId, new_child: NodeId, ref_child: NodeId },
+
     /// `element.setAttribute(name, value)` or `style.foo = bar`.
     SetAttribute { node: NodeId, name: &'a str, value: &'a str },
+
+    /// `element.removeAttribute(name)` — remove an attribute.
+    RemoveAttribute { node: NodeId, name: &'a str },
+
+    /// `element.classList.add(class)` — add a CSS class.
+    AddClass { node: NodeId, class: &'a str },
 
     /// A complete inline `style="..."` declaration.
     SetInlineStyle { node: NodeId, css: &'a str },

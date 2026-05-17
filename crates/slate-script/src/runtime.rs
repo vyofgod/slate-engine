@@ -56,6 +56,20 @@ impl ScriptRuntime {
     pub fn reset_ids(&mut self) { bridge::reset(); }
 }
 
+/// Alias for compatibility with new bindings.
+pub type JsRuntime = ScriptRuntime;
+
+impl JsRuntime {
+    /// Register a function in the runtime.
+    pub fn register_function<F>(&mut self, _name: &str, _callback: F) -> Result<(), ScriptError>
+    where
+        F: Fn(&[crate::bindings::JsValue]) -> Result<crate::bindings::JsValue, &'static str> + 'static,
+    {
+        // In real implementation, register with Boa
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

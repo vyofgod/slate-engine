@@ -9,6 +9,17 @@ members = [
     "crates/slate-render",
     "crates/slate-script",
     "crates/slate-network",
+    "crates/slate-window",
+    "crates/slate-text",
+    "crates/slate-css",
+    "crates/slate-html",
+    "crates/slate-events",
+    "crates/slate-layout",
+    "crates/slate-dom",
+    "crates/slate-rasterizer",
+    "crates/slate-image",
+    "crates/slate-webapi",
+    "crates/slate-benchmarks",
 ]
 
 [workspace.package]
@@ -24,9 +35,19 @@ slate-ais        = { path = "crates/slate-ais" }
 slate-dispatcher = { path = "crates/slate-dispatcher" }
 slate-state      = { path = "crates/slate-state" }
 slate-arena      = { path = "crates/slate-arena" }
+slate-kernel     = { path = "crates/slate-kernel" }
 slate-render     = { path = "crates/slate-render" }
 slate-script     = { path = "crates/slate-script" }
 slate-network    = { path = "crates/slate-network" }
+slate-text       = { path = "crates/slate-text" }
+slate-css        = { path = "crates/slate-css" }
+slate-html       = { path = "crates/slate-html" }
+slate-events     = { path = "crates/slate-events" }
+slate-layout     = { path = "crates/slate-layout" }
+slate-dom        = { path = "crates/slate-dom" }
+slate-rasterizer = { path = "crates/slate-rasterizer" }
+slate-image      = { path = "crates/slate-image" }
+slate-webapi     = { path = "crates/slate-webapi" }
 
 slotmap          = "1.0"
 dashmap          = "6.1"

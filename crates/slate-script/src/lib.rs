@@ -20,8 +20,10 @@
 //! `wasmtime` runtime instead of Boa's interpreter. Phase 2 ships
 //! the channel, not the runtime switch.
 
+pub mod bindings;
 pub mod bridge;
 pub mod host;
 pub mod runtime;
+pub mod event_loop;
 
 pub use runtime::{ScriptError, ScriptRuntime};

@@ -13,3 +13,4 @@ missing_debug_implementations = "warn"
 
 [dependencies]
 smallvec = { workspace = true }
+slotmap = { workspace = true }

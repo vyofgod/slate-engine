@@ -1,0 +1,23 @@
+[package]
+name    = "slate-css"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+slate-ais = { workspace = true }
+thiserror = { workspace = true }
+smallvec  = { workspace = true }
+
+# CSS parsing
+cssparser = "0.31"
+selectors = "0.25"
+
+[dev-dependencies]
+criterion = { workspace = true }
+slate-dom = { workspace = true }
+
+[[bench]]
+name = "selector_matching"
+harness = false

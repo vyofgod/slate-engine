@@ -1,0 +1,15 @@
+[package]
+name = "slate-webapi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+slate-ais = { path = "../slate-ais" }
+slate-dispatcher = { path = "../slate-dispatcher" }
+slate-dom = { path = "../slate-dom" }
+slate-events = { path = "../slate-events" }
+boa_engine = "0.19"
+boa_gc = "0.19"
+rand = "0.8"
+
+[dev-dependencies]

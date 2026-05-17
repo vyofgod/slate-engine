@@ -1,0 +1,1343 @@
+Web APIs
+
+When writing code for the Web, there are a large number of Web APIs available. Below is a list of all the APIs and interfaces (object types) that you may be able to use while developing your Web app or site.
+
+Web APIs are typically used with JavaScript, although this doesn't always have to be the case.
+In this article
+
+    Specifications
+    Interfaces
+
+Specifications
+
+This is a list of all the APIs that are available.
+A
+
+    Attribution Reporting API
+    Audio Output Devices API
+    Audio Session API
+
+B
+
+    Background Fetch API
+    Background Synchronization API
+    Background Tasks API
+    Badging API
+    Barcode Detection API
+    Battery Status API
+    Beacon API
+    Broadcast Channel API
+
+C
+
+    CSS Custom Highlight API
+    CSS Font Loading API
+    CSS Painting API
+    CSS Properties and Values API
+    CSS Typed Object Model API
+    CSS Object Model (CSSOM)
+    CSSOM view API
+    Canvas API
+    Channel Messaging API
+    Clipboard API
+    Compression Streams API
+    Compute Pressure API
+    Console API
+    Contact Picker API
+    Content Index API
+    Cookie Store API
+    Credential Management API
+
+D
+
+    Document Object Model (DOM)
+    Device Memory API
+    Device orientation events
+    Device Posture API
+    Document Picture-in-Picture API
+
+E
+
+    EditContext API
+    Encoding API
+    Encrypted Media Extensions API
+    EyeDropper API
+
+F
+
+    Federated Credential Management (FedCM) API
+    Fenced Frame API
+    Fetch API
+    File API
+    File System API
+    File and Directory Entries API
+    Force Touch events
+    Fullscreen API
+
+G
+
+    Gamepad API
+    Geolocation API
+    Geometry interfaces
+
+H
+
+    HTML DOM API
+    HTML Drag and Drop API
+    HTML Sanitizer API
+    History API
+    Houdini APIs
+
+I
+
+    Idle Detection API
+    IndexedDB API
+    Ink API
+    InputDeviceCapabilities API
+    Insertable Streams for MediaStreamTrack API
+    Intersection Observer API
+    Invoker Commands API
+
+J
+
+    JS Self-Profiling API
+
+K
+
+    Keyboard API
+
+L
+
+    Launch Handler API
+    Local Font Access API
+
+M
+
+    MediaStream Image Capture API
+    Media Capabilities API
+    Media Capture and Streams API (Media Stream)
+    Media Session API
+    Media Source API
+    MediaStream Recording API
+
+N
+
+    Navigation API
+    Network Information API
+    Notifications API
+
+P
+
+    Page Visibility API
+    Payment Request API
+    Performance APIs
+    Permissions API
+    Picture-in-Picture API
+    Pointer events
+    Pointer Lock API
+    Popover API
+    Presentation API
+    Prioritized Task Scheduling API
+    Private State Token API
+    Push API
+
+R
+
+    Remote Playback API
+    Reporting API
+    Resize Observer API
+
+S
+
+    SVG API
+    Screen Capture API
+    Screen Orientation API
+    Screen Wake Lock API
+    Selection API
+    Sensor APIs
+    Server-sent events
+    Service Worker API
+    Shared Storage API
+    Speculation Rules API
+    Storage API
+    Storage Access API
+    Streams API
+    Summarizer API
+
+T
+
+    Topics API
+    Touch events
+    Translator and Language Detector APIs
+    Trusted Types API
+
+U
+
+    UI Events
+    URL API
+    URL Fragment Text Directives
+    URL Pattern API
+    User Preferences API
+    User-Agent Client Hints API
+
+V
+
+    Vibration API
+    View Transition API
+    Viewport Segments API
+    VirtualKeyboard API
+
+W
+
+    Web Bluetooth API
+    Web Periodic Background Synchronization API
+    Web Animations API
+    Web Audio API
+    Web Authentication API
+    Web Components
+    Web Crypto API
+    Web Locks API
+    Web MIDI API
+    Web NFC API
+    Web Serial API
+    Web Share API
+    Web Speech API
+    Web Storage API
+    Web Workers API
+    Web-based Payment Handler API
+    WebCodecs API
+    WebGL: 2D and 3D graphics for the web
+    WebGPU API
+    WebHID API
+    WebOTP API
+    WebRTC API
+    WebSocket API (WebSockets)
+    WebTransport API
+    WebUSB API
+    WebVR API
+    WebVTT API
+    WebXR Device API
+    Window Controls Overlay API
+    Window Management API
+
+X
+
+    XMLHttpRequest API
+
+Interfaces
+
+This is a list of all the interfaces (that is, types of objects) that are available.
+A
+
+    AbortController
+    AbortSignal
+    AbsoluteOrientationSensor
+    AbstractRange
+    Accelerometer
+    AesCbcParams
+    AesCtrParams
+    AesDerivedKeyParams
+    AesGcmParams
+    AesKeyGenParams
+    AmbientLightSensor
+    AnalyserNode
+    ANGLE_instanced_arrays
+    Animation
+    AnimationEffect
+    AnimationEvent
+    AnimationPlaybackEvent
+    AnimationTimeline
+    Attr
+    AudioBuffer
+    AudioBufferSourceNode
+    AudioContext
+    AudioData
+    AudioDecoder
+    AudioDestinationNode
+    AudioEncoder
+    AudioListener
+    AudioNode
+    AudioParam
+    AudioParamDescriptor
+    AudioParamMap
+    AudioProcessingEvent
+    AudioScheduledSourceNode
+    AudioSession
+    AudioSinkInfo
+    AudioTrack
+    AudioTrackList
+    AudioWorklet
+    AudioWorkletGlobalScope
+    AudioWorkletNode
+    AudioWorkletProcessor
+    AuthenticatorAssertionResponse
+    AuthenticatorAttestationResponse
+    AuthenticatorResponse
+
+B
+
+    BackgroundFetchEvent
+    BackgroundFetchManager
+    BackgroundFetchRecord
+    BackgroundFetchRegistration
+    BackgroundFetchUpdateUIEvent
+    BarcodeDetector
+    BarProp
+    BaseAudioContext
+    BatteryManager
+    BeforeInstallPromptEvent
+    BeforeUnloadEvent
+    BiquadFilterNode
+    Blob
+    BlobEvent
+    Bluetooth
+    BluetoothCharacteristicProperties
+    BluetoothDevice
+    BluetoothRemoteGATTCharacteristic
+    BluetoothRemoteGATTDescriptor
+    BluetoothRemoteGATTServer
+    BluetoothRemoteGATTService
+    BluetoothUUID
+    BroadcastChannel
+    BrowserCaptureMediaStreamTrack
+    BufferedChangeEvent
+    ByteLengthQueuingStrategy
+
+C
+
+    Cache
+    CacheStorage
+    CanMakePaymentEvent
+    CanvasCaptureMediaStreamTrack
+    CanvasGradient
+    CanvasPattern
+    CanvasRenderingContext2D
+    CaptureController
+    CaretPosition
+    CDATASection
+    ChannelMergerNode
+    ChannelSplitterNode
+    ChapterInformation
+    CharacterBoundsUpdateEvent
+    CharacterData
+    Client
+    Clients
+    Clipboard
+    ClipboardChangeEvent
+    ClipboardEvent
+    ClipboardItem
+    CloseEvent
+    CloseWatcher
+    COEPViolationReport
+    CommandEvent
+    Comment
+    CompositionEvent
+    CompressionStream
+
+c
+
+    console
+
+C
+
+    ConstantSourceNode
+    ContactAddress
+    ContactsManager
+    ContentIndex
+    ContentIndexEvent
+    ContentVisibilityAutoStateChangeEvent
+    ConvolverNode
+    CookieChangeEvent
+    CookieStore
+    CookieStoreManager
+    CountQueuingStrategy
+    CrashReport
+    CrashReportContext
+    CreateMonitor
+    Credential
+    CredentialsContainer
+    CropTarget
+    Crypto
+    CryptoKey
+    CryptoKeyPair
+    CSPViolationReport
+    CSS
+    CSSAnimation
+    CSSConditionRule
+    CSSContainerRule
+    CSSCounterStyleRule
+    CSSFontFaceDescriptors
+    CSSFontFaceRule
+    CSSFontFeatureValuesMap
+    CSSFontFeatureValuesRule
+    CSSFontPaletteValuesRule
+    CSSFunctionDeclarations
+    CSSFunctionDescriptors
+    CSSFunctionRule
+    CSSGroupingRule
+    CSSImageValue
+    CSSImportRule
+    CSSKeyframeRule
+    CSSKeyframesRule
+    CSSKeywordValue
+    CSSLayerBlockRule
+    CSSLayerStatementRule
+    CSSMathClamp
+    CSSMathInvert
+    CSSMathMax
+    CSSMathMin
+    CSSMathNegate
+    CSSMathProduct
+    CSSMathSum
+    CSSMathValue
+    CSSMatrixComponent
+    CSSMediaRule
+    CSSNamespaceRule
+    CSSNestedDeclarations
+    CSSNumericArray
+    CSSNumericValue
+    CSSPageDescriptors
+    CSSPageRule
+    CSSPerspective
+    CSSPositionTryDescriptors
+    CSSPositionTryRule
+    CSSPositionValue
+    CSSPrimitiveValue
+    CSSPropertyRule
+    CSSPseudoElement
+    CSSRotate
+    CSSRule
+    CSSRuleList
+    CSSScale
+    CSSScopeRule
+    CSSSkew
+    CSSSkewX
+    CSSSkewY
+    CSSStartingStyleRule
+    CSSStyleDeclaration
+    CSSStyleProperties
+    CSSStyleRule
+    CSSStyleSheet
+    CSSStyleValue
+    CSSSupportsRule
+    CSSTransformComponent
+    CSSTransformValue
+    CSSTransition
+    CSSTranslate
+    CSSUnitValue
+    CSSUnparsedValue
+    CSSValue
+    CSSValueList
+    CSSVariableReferenceValue
+    CSSViewTransitionRule
+    CustomElementRegistry
+    CustomEvent
+    CustomStateSet
+
+D
+
+    DataCue
+    DataTransfer
+    DataTransferItem
+    DataTransferItemList
+    DecompressionStream
+    DedicatedWorkerGlobalScope
+    DeferredRequestInit
+    DelayNode
+    DelegatedInkTrailPresenter
+    DeprecationReport
+    DeviceMotionEvent
+    DeviceMotionEventAcceleration
+    DeviceMotionEventRotationRate
+    DeviceOrientationEvent
+    DevicePosture
+    DirectoryEntrySync
+    DirectoryReaderSync
+    Document
+    DocumentFragment
+    DocumentPictureInPicture
+    DocumentPictureInPictureEvent
+    DocumentTimeline
+    DocumentType
+    DOMError
+    DOMException
+    DOMHighResTimeStamp
+    DOMImplementation
+    DOMMatrix
+    DOMMatrixReadOnly
+    DOMParser
+    DOMPoint
+    DOMPointReadOnly
+    DOMQuad
+    DOMRect
+    DOMRectList
+    DOMRectReadOnly
+    DOMStringList
+    DOMStringMap
+    DOMTokenList
+    DragEvent
+    DynamicsCompressorNode
+
+E
+
+    EcdhKeyDeriveParams
+    EcdsaParams
+    EcKeyGenParams
+    EcKeyImportParams
+    EditContext
+    Element
+    ElementInternals
+    EncodedAudioChunk
+    EncodedVideoChunk
+    ErrorEvent
+    Event
+    EventCounts
+    EventSource
+    EventTarget
+    ExtendableCookieChangeEvent
+    ExtendableEvent
+    ExtendableMessageEvent
+    EyeDropper
+
+F
+
+    FeaturePolicy
+    FederatedCredential
+    FederatedCredentialInit
+    Fence
+    FencedFrameConfig
+    FetchEvent
+    FetchLaterResult
+    File
+    FileEntrySync
+    FileList
+    FileReader
+    FileReaderSync
+    FileSystem
+    FileSystemChangeRecord
+    FileSystemDirectoryEntry
+    FileSystemDirectoryHandle
+    FileSystemDirectoryReader
+    FileSystemEntry
+    FileSystemFileEntry
+    FileSystemFileHandle
+    FileSystemHandle
+    FileSystemObserver
+    FileSystemSync
+    FileSystemSyncAccessHandle
+    FileSystemWritableFileStream
+    FocusEvent
+    FontData
+    FontFace
+    FontFaceSet
+    FontFaceSetLoadEvent
+    FormData
+    FormDataEvent
+    FragmentDirective
+
+G
+
+    GainNode
+    Gamepad
+    GamepadButton
+    GamepadEvent
+    GamepadHapticActuator
+    GamepadPose
+    Geolocation
+    GeolocationCoordinates
+    GeolocationPosition
+    GeolocationPositionError
+    GestureEvent
+    GPU
+    GPUAdapter
+    GPUAdapterInfo
+    GPUBindGroup
+    GPUBindGroupLayout
+    GPUBuffer
+    GPUCanvasContext
+    GPUCommandBuffer
+    GPUCommandEncoder
+    GPUCompilationInfo
+    GPUCompilationMessage
+    GPUComputePassEncoder
+    GPUComputePipeline
+    GPUDevice
+    GPUDeviceLostInfo
+    GPUError
+    GPUExternalTexture
+    GPUInternalError
+    GPUOutOfMemoryError
+    GPUPipelineError
+    GPUPipelineLayout
+    GPUQuerySet
+    GPUQueue
+    GPURenderBundle
+    GPURenderBundleEncoder
+    GPURenderPassEncoder
+    GPURenderPipeline
+    GPUSampler
+    GPUShaderModule
+    GPUSupportedFeatures
+    GPUSupportedLimits
+    GPUTexture
+    GPUTextureView
+    GPUUncapturedErrorEvent
+    GPUValidationError
+    GravitySensor
+    Gyroscope
+
+H
+
+    HashChangeEvent
+    Headers
+    HID
+    HIDConnectionEvent
+    HIDDevice
+    HIDInputReportEvent
+    Highlight
+    HighlightRegistry
+    History
+    HkdfParams
+    HmacImportParams
+    HmacKeyGenParams
+    HMDVRDevice
+    HTMLAllCollection
+    HTMLAnchorElement
+    HTMLAreaElement
+    HTMLAudioElement
+    HTMLBaseElement
+    HTMLBodyElement
+    HTMLBRElement
+    HTMLButtonElement
+    HTMLCanvasElement
+    HTMLCollection
+    HTMLDataElement
+    HTMLDataListElement
+    HTMLDetailsElement
+    HTMLDialogElement
+    HTMLDivElement
+    HTMLDListElement
+    HTMLDocument
+    HTMLElement
+    HTMLEmbedElement
+    HTMLFencedFrameElement
+    HTMLFieldSetElement
+    HTMLFontElement
+    HTMLFormControlsCollection
+    HTMLFormElement
+    HTMLFrameSetElement
+    HTMLGeolocationElement
+    HTMLHeadElement
+    HTMLHeadingElement
+    HTMLHRElement
+    HTMLHtmlElement
+    HTMLIFrameElement
+    HTMLImageElement
+    HTMLInputElement
+    HTMLLabelElement
+    HTMLLegendElement
+    HTMLLIElement
+    HTMLLinkElement
+    HTMLMapElement
+    HTMLMarqueeElement
+    HTMLMediaElement
+    HTMLMenuElement
+    HTMLMetaElement
+    HTMLMeterElement
+    HTMLModElement
+    HTMLObjectElement
+    HTMLOListElement
+    HTMLOptGroupElement
+    HTMLOptionElement
+    HTMLOptionsCollection
+    HTMLOutputElement
+    HTMLParagraphElement
+    HTMLParamElement
+    HTMLPictureElement
+    HTMLPreElement
+    HTMLProgressElement
+    HTMLQuoteElement
+    HTMLScriptElement
+    HTMLSelectedContentElement
+    HTMLSelectElement
+    HTMLSlotElement
+    HTMLSourceElement
+    HTMLSpanElement
+    HTMLStyleElement
+    HTMLTableCaptionElement
+    HTMLTableCellElement
+    HTMLTableColElement
+    HTMLTableElement
+    HTMLTableRowElement
+    HTMLTableSectionElement
+    HTMLTemplateElement
+    HTMLTextAreaElement
+    HTMLTimeElement
+    HTMLTitleElement
+    HTMLTrackElement
+    HTMLUListElement
+    HTMLUnknownElement
+    HTMLVideoElement
+
+I
+
+    IDBCursor
+    IDBCursorWithValue
+    IDBDatabase
+    IDBFactory
+    IDBIndex
+    IDBKeyRange
+    IDBObjectStore
+    IDBOpenDBRequest
+    IDBRequest
+    IDBTransaction
+    IDBVersionChangeEvent
+    IdentityCredential
+    IdentityCredentialError
+    IdentityCredentialRequestOptions
+    IdentityProvider
+    IdleDeadline
+    IdleDetector
+    IIRFilterNode
+    ImageBitmap
+    ImageBitmapRenderingContext
+    ImageCapture
+    ImageData
+    ImageDecoder
+    ImageTrack
+    ImageTrackList
+    Ink
+    InputDeviceCapabilities
+    InputDeviceInfo
+    InputEvent
+    InstallEvent
+    IntegrityViolationReport
+    InterestEvent
+    IntersectionObserver
+    IntersectionObserverEntry
+    InterventionReport
+
+K
+
+    Keyboard
+    KeyboardEvent
+    KeyboardLayoutMap
+    KeyframeEffect
+
+L
+
+    LanguageDetector
+    LargestContentfulPaint
+    LaunchParams
+    LaunchQueue
+    LayoutShift
+    LayoutShiftAttribution
+    LinearAccelerationSensor
+    Location
+    Lock
+    LockManager
+
+M
+
+    Magnetometer
+    ManagedMediaSource
+    ManagedSourceBuffer
+    MathMLElement
+    MediaCapabilities
+    MediaDeviceInfo
+    MediaDevices
+    MediaElementAudioSourceNode
+    MediaEncryptedEvent
+    MediaError
+    MediaKeyMessageEvent
+    MediaKeys
+    MediaKeySession
+    MediaKeyStatusMap
+    MediaKeySystemAccess
+    MediaList
+    MediaMetadata
+    MediaQueryList
+    MediaQueryListEvent
+    MediaRecorder
+    MediaRecorderErrorEvent
+    MediaSession
+    MediaSource
+    MediaSourceHandle
+    MediaStream
+    MediaStreamAudioDestinationNode
+    MediaStreamAudioSourceNode
+    MediaStreamEvent
+    MediaStreamTrack
+    MediaStreamTrackAudioSourceNode
+    MediaStreamTrackEvent
+    MediaStreamTrackGenerator
+    MediaStreamTrackProcessor
+    MediaTrackConstraints
+    MediaTrackSettings
+    MediaTrackSupportedConstraints
+    MerchantValidationEvent
+    MessageChannel
+    MessageEvent
+    MessagePort
+    Metadata
+    MIDIAccess
+    MIDIConnectionEvent
+    MIDIInput
+    MIDIInputMap
+    MIDIMessageEvent
+    MIDIOutput
+    MIDIOutputMap
+    MIDIPort
+    MimeType
+    MimeTypeArray
+    MouseEvent
+    MouseScrollEvent
+    MutationEvent
+    MutationObserver
+    MutationRecord
+
+N
+
+    NamedNodeMap
+    NavigateEvent
+    Navigation
+    NavigationActivation
+    NavigationCurrentEntryChangeEvent
+    NavigationDestination
+    NavigationHistoryEntry
+    NavigationPrecommitController
+    NavigationPreloadManager
+    NavigationTransition
+    Navigator
+    NavigatorLogin
+    NavigatorUAData
+    NDEFMessage
+    NDEFReader
+    NDEFReadingEvent
+    NDEFRecord
+    NetworkInformation
+    Node
+    NodeIterator
+    NodeList
+    Notification
+    NotificationEvent
+    NotRestoredReasonDetails
+    NotRestoredReasons
+
+O
+
+    OES_draw_buffers_indexed
+    OfflineAudioCompletionEvent
+    OfflineAudioContext
+    OffscreenCanvas
+    OffscreenCanvasRenderingContext2D
+    OrientationSensor
+    OscillatorNode
+    OTPCredential
+    OverconstrainedError
+
+P
+
+    PageRevealEvent
+    PageSwapEvent
+    PageTransitionEvent
+    PaintRenderingContext2D
+    PaintSize
+    PaintWorkletGlobalScope
+    PannerNode
+    PasswordCredential
+    PasswordCredentialInit
+    Path2D
+    PaymentAddress
+    PaymentManager
+    PaymentMethodChangeEvent
+    PaymentRequest
+    PaymentRequestEvent
+    PaymentRequestUpdateEvent
+    PaymentResponse
+    Pbkdf2Params
+    Performance
+    PerformanceElementTiming
+    PerformanceEntry
+    PerformanceEventTiming
+    PerformanceLongAnimationFrameTiming
+    PerformanceLongTaskTiming
+    PerformanceMark
+    PerformanceMeasure
+    PerformanceNavigation
+    PerformanceNavigationTiming
+    PerformanceObserver
+    PerformanceObserverEntryList
+    PerformancePaintTiming
+    PerformanceResourceTiming
+    PerformanceScriptTiming
+    PerformanceServerTiming
+    PerformanceTiming
+    PeriodicSyncEvent
+    PeriodicSyncManager
+    PeriodicWave
+    Permissions
+    PermissionsPolicyViolationReport
+    PermissionStatus
+    PictureInPictureEvent
+    PictureInPictureWindow
+    Plugin
+    PluginArray
+    Point
+    PointerEvent
+    PopStateEvent
+    PositionSensorVRDevice
+    PreferenceManager
+    PreferenceObject
+    Presentation
+    PresentationAvailability
+    PresentationConnection
+    PresentationConnectionAvailableEvent
+    PresentationConnectionCloseEvent
+    PresentationConnectionList
+    PresentationReceiver
+    PresentationRequest
+    PressureObserver
+    PressureRecord
+    ProcessingInstruction
+    Profiler
+    ProgressEvent
+    PromiseRejectionEvent
+    PublicKeyCredential
+    PublicKeyCredentialCreationOptions
+    PublicKeyCredentialRequestOptions
+    PushEvent
+    PushManager
+    PushMessageData
+    PushSubscription
+    PushSubscriptionOptions
+
+Q
+
+    QuotaExceededError
+
+R
+
+    RadioNodeList
+    Range
+    ReadableByteStreamController
+    ReadableStream
+    ReadableStreamBYOBReader
+    ReadableStreamBYOBRequest
+    ReadableStreamDefaultController
+    ReadableStreamDefaultReader
+    RelativeOrientationSensor
+    RemotePlayback
+    ReportingObserver
+    Request
+    RequestInit
+    ResizeObserver
+    ResizeObserverEntry
+    ResizeObserverSize
+    Response
+    RestrictionTarget
+    RsaHashedImportParams
+    RsaHashedKeyGenParams
+    RsaOaepParams
+    RsaPssParams
+    RTCAudioSourceStats
+    RTCCertificate
+    RTCCertificateStats
+    RTCCodecStats
+    RTCDataChannel
+    RTCDataChannelEvent
+    RTCDataChannelStats
+    RTCDtlsTransport
+    RTCDTMFSender
+    RTCDTMFToneChangeEvent
+    RTCEncodedAudioFrame
+    RTCEncodedVideoFrame
+    RTCError
+    RTCErrorEvent
+    RTCIceCandidate
+    RTCIceCandidatePair
+    RTCIceCandidatePairStats
+    RTCIceCandidateStats
+    RTCIceParameters
+    RTCIceTransport
+    RTCIdentityAssertion
+    RTCInboundRtpStreamStats
+    RTCOutboundRtpStreamStats
+    RTCPeerConnection
+    RTCPeerConnectionIceErrorEvent
+    RTCPeerConnectionIceEvent
+    RTCPeerConnectionStats
+    RTCRemoteInboundRtpStreamStats
+    RTCRemoteOutboundRtpStreamStats
+    RTCRtpReceiver
+    RTCRtpScriptTransform
+    RTCRtpScriptTransformer
+    RTCRtpSender
+    RTCRtpTransceiver
+    RTCSctpTransport
+    RTCSessionDescription
+    RTCStatsReport
+    RTCTrackEvent
+    RTCTransformEvent
+    RTCTransportStats
+    RTCVideoSourceStats
+
+S
+
+    Sanitizer
+    SanitizerConfig
+    Scheduler
+    Scheduling
+    Screen
+    ScreenDetailed
+    ScreenDetails
+    ScreenOrientation
+    ScriptProcessorNode
+    ScrollTimeline
+    SecurePaymentConfirmationRequest
+    SecurityPolicyViolationEvent
+    Selection
+    Sensor
+    SensorErrorEvent
+    Serial
+    SerialPort
+    ServiceWorker
+    ServiceWorkerContainer
+    ServiceWorkerGlobalScope
+    ServiceWorkerRegistration
+    ShadowRoot
+    SharedStorage
+    SharedStorageOperation
+    SharedStorageRunOperation
+    SharedStorageSelectURLOperation
+    SharedStorageWorklet
+    SharedStorageWorkletGlobalScope
+    SharedWorker
+    SharedWorkerGlobalScope
+    SnapEvent
+    SourceBuffer
+    SourceBufferList
+    SpeechGrammar
+    SpeechGrammarList
+    SpeechRecognition
+    SpeechRecognitionAlternative
+    SpeechRecognitionErrorEvent
+    SpeechRecognitionEvent
+    SpeechRecognitionPhrase
+    SpeechRecognitionResult
+    SpeechRecognitionResultList
+    SpeechSynthesis
+    SpeechSynthesisErrorEvent
+    SpeechSynthesisEvent
+    SpeechSynthesisUtterance
+    SpeechSynthesisVoice
+    StaticRange
+    StereoPannerNode
+    Storage
+    StorageAccessHandle
+    StorageEvent
+    StorageManager
+    StylePropertyMap
+    StylePropertyMapReadOnly
+    StyleSheet
+    StyleSheetList
+    SubmitEvent
+    SubtleCrypto
+    Summarizer
+    SVGAElement
+    SVGAngle
+    SVGAnimateColorElement
+    SVGAnimatedAngle
+    SVGAnimatedBoolean
+    SVGAnimatedEnumeration
+    SVGAnimatedInteger
+    SVGAnimatedLength
+    SVGAnimatedLengthList
+    SVGAnimatedNumber
+    SVGAnimatedNumberList
+    SVGAnimatedPreserveAspectRatio
+    SVGAnimatedRect
+    SVGAnimatedString
+    SVGAnimatedTransformList
+    SVGAnimateElement
+    SVGAnimateMotionElement
+    SVGAnimateTransformElement
+    SVGAnimationElement
+    SVGCircleElement
+    SVGClipPathElement
+    SVGComponentTransferFunctionElement
+    SVGDefsElement
+    SVGDescElement
+    SVGDiscardElement
+    SVGElement
+    SVGEllipseElement
+    SVGFEBlendElement
+    SVGFEColorMatrixElement
+    SVGFEComponentTransferElement
+    SVGFECompositeElement
+    SVGFEConvolveMatrixElement
+    SVGFEDiffuseLightingElement
+    SVGFEDisplacementMapElement
+    SVGFEDistantLightElement
+    SVGFEDropShadowElement
+    SVGFEFloodElement
+    SVGFEFuncAElement
+    SVGFEFuncBElement
+    SVGFEFuncGElement
+    SVGFEFuncRElement
+    SVGFEGaussianBlurElement
+    SVGFEImageElement
+    SVGFEMergeElement
+    SVGFEMergeNodeElement
+    SVGFEMorphologyElement
+    SVGFEOffsetElement
+    SVGFEPointLightElement
+    SVGFESpecularLightingElement
+    SVGFESpotLightElement
+    SVGFETileElement
+    SVGFETurbulenceElement
+    SVGFilterElement
+    SVGForeignObjectElement
+    SVGGElement
+    SVGGeometryElement
+    SVGGradientElement
+    SVGGraphicsElement
+    SVGImageElement
+    SVGLength
+    SVGLengthList
+    SVGLinearGradientElement
+    SVGLineElement
+    SVGMarkerElement
+    SVGMaskElement
+    SVGMetadataElement
+    SVGMPathElement
+    SVGNumber
+    SVGNumberList
+    SVGPathElement
+    SVGPatternElement
+    SVGPoint
+    SVGPointList
+    SVGPolygonElement
+    SVGPolylineElement
+    SVGPreserveAspectRatio
+    SVGRadialGradientElement
+    SVGRect
+    SVGRectElement
+    SVGRenderingIntent
+    SVGScriptElement
+    SVGSetElement
+    SVGStopElement
+    SVGStringList
+    SVGStyleElement
+    SVGSVGElement
+    SVGSwitchElement
+    SVGSymbolElement
+    SVGTextContentElement
+    SVGTextElement
+    SVGTextPathElement
+    SVGTextPositioningElement
+    SVGTitleElement
+    SVGTransform
+    SVGTransformList
+    SVGTSpanElement
+    SVGUnitTypes
+    SVGUseElement
+    SVGViewElement
+    SyncEvent
+    SyncManager
+
+T
+
+    TaskAttributionTiming
+    TaskController
+    TaskPriorityChangeEvent
+    TaskSignal
+    Text
+    TextDecoder
+    TextDecoderStream
+    TextEncoder
+    TextEncoderStream
+    TextEvent
+    TextFormat
+    TextFormatUpdateEvent
+    TextMetrics
+    TextTrack
+    TextTrackCue
+    TextTrackCueList
+    TextTrackList
+    TextUpdateEvent
+    TimeEvent
+    TimeRanges
+    ToggleEvent
+    Touch
+    TouchEvent
+    TouchList
+    TrackEvent
+    TransformStream
+    TransformStreamDefaultController
+    TransitionEvent
+    Translator
+    TreeWalker
+    TrustedHTML
+    TrustedScript
+    TrustedScriptURL
+    TrustedTypePolicy
+    TrustedTypePolicyFactory
+
+U
+
+    UIEvent
+    URL
+    URLPattern
+    URLSearchParams
+    USB
+    USBAlternateInterface
+    USBConfiguration
+    USBConnectionEvent
+    USBDevice
+    USBEndpoint
+    USBInterface
+    USBInTransferResult
+    USBIsochronousInTransferPacket
+    USBIsochronousInTransferResult
+    USBIsochronousOutTransferPacket
+    USBIsochronousOutTransferResult
+    USBOutTransferResult
+    UserActivation
+
+V
+
+    ValidityState
+    VideoColorSpace
+    VideoDecoder
+    VideoEncoder
+    VideoFrame
+    VideoPlaybackQuality
+    VideoTrack
+    VideoTrackGenerator
+    VideoTrackList
+    Viewport
+    ViewTimeline
+    ViewTransition
+    ViewTransitionTypeSet
+    VirtualKeyboard
+    VisibilityStateEntry
+    VisualViewport
+    VRDisplay
+    VRDisplayCapabilities
+    VRDisplayEvent
+    VREyeParameters
+    VRFieldOfView
+    VRFrameData
+    VRLayerInit
+    VRPose
+    VRStageParameters
+    VTTCue
+    VTTRegion
+
+W
+
+    WakeLock
+    WakeLockSentinel
+    WaveShaperNode
+    WebGL2RenderingContext
+    WebGLActiveInfo
+    WebGLBuffer
+    WebGLContextEvent
+    WebGLFramebuffer
+    WebGLObject
+    WebGLProgram
+    WebGLQuery
+    WebGLRenderbuffer
+    WebGLRenderingContext
+    WebGLSampler
+    WebGLShader
+    WebGLShaderPrecisionFormat
+    WebGLSync
+    WebGLTexture
+    WebGLTransformFeedback
+    WebGLUniformLocation
+    WebGLVertexArrayObject
+    WebSocket
+    WebSocketStream
+    WebTransport
+    WebTransportBidirectionalStream
+    WebTransportDatagramDuplexStream
+    WebTransportError
+    WebTransportReceiveStream
+    WebTransportSendStream
+    WGSLLanguageFeatures
+    WheelEvent
+    Window
+    WindowClient
+    WindowControlsOverlay
+    WindowControlsOverlayGeometryChangeEvent
+    WindowSharedStorage
+    Worker
+    WorkerGlobalScope
+    WorkerLocation
+    WorkerNavigator
+    Worklet
+    WorkletGlobalScope
+    WorkletSharedStorage
+    WritableStream
+    WritableStreamDefaultController
+    WritableStreamDefaultWriter
+
+X
+
+    XMLDocument
+    XMLHttpRequest
+    XMLHttpRequestEventTarget
+    XMLHttpRequestUpload
+    XMLSerializer
+    XPathEvaluator
+    XPathExpression
+    XPathResult
+    XRAnchor
+    XRAnchorSet
+    XRBoundedReferenceSpace
+    XRCompositionLayer
+    XRCPUDepthInformation
+    XRCubeLayer
+    XRCylinderLayer
+    XRDepthInformation
+    XREquirectLayer
+    XRFrame
+    XRHand
+    XRHitTestResult
+    XRHitTestSource
+    XRInputSource
+    XRInputSourceArray
+    XRInputSourceEvent
+    XRInputSourcesChangeEvent
+    XRJointPose
+    XRJointSpace
+    XRLayer
+    XRLayerEvent
+    XRLightEstimate
+    XRLightProbe
+    XRMediaBinding
+    XRPose
+    XRProjectionLayer
+    XRQuadLayer
+    XRRay
+    XRReferenceSpace
+    XRReferenceSpaceEvent
+    XRRenderState
+    XRRigidTransform
+    XRSession
+    XRSessionEvent
+    XRSpace
+    XRSubImage
+    XRSystem
+    XRTransientInputHitTestResult
+    XRTransientInputHitTestSource
+    XRView
+    XRViewerPose
+    XRViewport
+    XRWebGLBinding
+    XRWebGLDepthInformation
+    XRWebGLLayer
+    XRWebGLSubImage
+    XSLTProcessor

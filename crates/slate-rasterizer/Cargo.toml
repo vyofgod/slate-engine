@@ -1,0 +1,14 @@
+[package]
+name    = "slate-rasterizer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+slate-ais = { workspace = true }
+slate-layout = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+criterion = { workspace = true }
