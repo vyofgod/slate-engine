@@ -1,413 +1,211 @@
 # Slate Engine Benchmarks
 
-## Quick Start
+This document describes the benchmark entry points that exist in the repository and the rough intent of each one. For the system view, see [README.md](./README.md) and [ARCHITECTURE.md](./ARCHITECTURE.md).
+
+## Benchmark Philosophy
+
+Benchmarks in this repository should answer concrete engineering questions:
+
+- Does the dispatcher emit a stable instruction stream?
+- How long do demo pipelines take under a given profile?
+- Did a render path produce an artifact with expected dimensions?
+- Did a change affect state, layout, or render output?
+- Are timing numbers being collected under repeatable command-line conditions?
+
+Benchmark results should be treated as local measurements. Hardware, GPU availability, Rust profile, system load, and dependency versions can all change results.
+
+## Run Commands
 
 ```bash
-# Run all benchmarks
-./scripts/benchmark.sh --all
-
-# Run micro benchmarks only
-./scripts/benchmark.sh --micro
-
-# Generate performance report
-./scripts/performance_report.sh
-
-# Generate flamegraph
-./scripts/benchmark.sh --flamegraph
-```
-
-## Available Benchmarks
-
-### 1. Dispatcher Benchmarks (`slate-kernel`)
-
-Measures the core translation bridge performance:
-
-```bash
+python3 scripts/browser_engine_benchmark.py --iterations 5 --warmups 1
+python3 scripts/browser_engine_benchmark.py --iterations 3 --criterion-smoke
+./scripts/benchmark.sh
 cargo bench -p slate-kernel
-```
-
-**Tests:**
-- `dispatch/create_element` - Element creation overhead
-- `dispatch/inline_style` - Style parsing and decomposition
-- `dispatch/append_child` - DOM manipulation
-
-**Expected Performance:**
-- Create element: < 100ns
-- Inline style: < 500ns
-- Append child: < 50ns
-
-### 2. CSS Selector Matching (`slate-css`)
-
-Measures CSS selector matching and cascade resolution:
-
-```bash
 cargo bench -p slate-css
-```
-
-**Tests:**
-- Simple selectors (type, class, ID)
-- Complex selectors (compound, descendant)
-- Specificity calculation
-- Cascade resolution
-
-**Expected Performance:**
-- Simple selector match: < 50ns
-- Complex selector match: < 200ns
-- Cascade resolution: < 1µs
-
-### 3. Flexbox Layout (`slate-layout`)
-
-Measures layout engine performance:
-
-```bash
 cargo bench -p slate-layout
+cargo bench -p slate-benchmarks --bench full_pipeline
 ```
 
-**Tests:**
-- Row layout (5, 10, 20, 50 children)
-- Column layout
-- Wrap behavior
-- Justify content modes
-- Align items modes
-- Nested flex containers
+## Browser Engine Harness
 
-**Expected Performance:**
-- 10 children: < 10µs
-- 50 children: < 50µs
-- Nested (2 levels): < 100µs
+`scripts/browser_engine_benchmark.py` is the preferred high-level benchmark runner for engine behavior. It is a Python harness, not a shell script. It builds the real Rust binaries, runs the browser-engine demo paths, parses their output, validates generated render artifacts, and writes reports to `target/slate-browser-benchmark/`.
 
-### 4. Full Pipeline (`benches/full_pipeline.rs`)
+Measured scenarios:
 
-End-to-end integration benchmarks:
+- `ais_dispatch_demo`: HTML snippet to WebCall, AIS, and state snapshot.
+- `html_css_layout_raster`: HTML, CSS, DOM, layout, display list, and CPU raster path.
+- `script_kernel_gpu_pipeline`: script runtime, kernel dispatch, and headless GPU render path.
+- `media_forms_svg_surface`: image, canvas, form validation, and SVG compatibility path.
+
+Generated reports:
+
+- `target/slate-browser-benchmark/latest.json`
+- `target/slate-browser-benchmark/latest.md`
+
+Recommended quick validation:
 
 ```bash
-cargo bench --bench full_pipeline
+python3 scripts/browser_engine_benchmark.py --profile debug --iterations 1 --warmups 0
 ```
 
-**Tests:**
-- Simple page rendering
-- Complex page rendering
-- DOM manipulation
-- Style computation
-- Rasterization (800x600, 1920x1080, 4K)
-
-**Expected Performance:**
-- Simple page: < 5ms
-- Complex page: < 20ms
-- 1080p raster: < 16ms (60 FPS)
-
-## Performance Targets
-
-### Speed
-- ✅ First meaningful paint: **< 500ms**
-- 🎯 Speedometer 3.0: **> 400**
-- ✅ Layout pass: **< 16ms** (60 FPS)
-- 🎯 JavaScript execution: **Competitive with V8**
-
-### Memory
-- 🎯 Average page: **< 50MB**
-- 🎯 Idle memory: **< 100MB**
-- 🎯 Memory per tab: **< 200MB**
-
-### Compliance
-- 🎯 Web Platform Tests: **> 95% pass rate**
-- 🎯 Acid3: **100/100**
-- 🎯 HTML5 test: **> 90%**
-- 🎯 CSS test: **> 90%**
-
-## Architecture Advantages
-
-### 1. Zero Interpretation Overhead
-
-**Traditional engines (Chromium, Firefox):**
-```
-Web API → Interpret → Execute → Render
-         ↑ "interpretation tax"
-```
-
-**Slate:**
-```
-Web API → Translate (AIS) → Execute → Render
-         ↑ O(n) single-pass, deterministic
-```
-
-**Benefit:** Eliminates interpretation overhead, predictable performance
-
-### 2. Deterministic Execution
-
-```rust
-(snapshot, input_sequence) → snapshot'  // Pure function!
-```
-
-- Perfect replay capability
-- Time-travel debugging
-- No wall clock, no thread scheduling
-- Testable and verifiable
-
-### 3. Zero-Copy GPU Upload
-
-```rust
-#[repr(C)]  // Direct GPU memory layout
-pub struct RenderPrimitive {
-    // Fields map directly to GPU buffer
-}
-```
-
-- No intermediate CPU paint buffer
-- Single draw call per frame
-- Instanced rendering
-- Minimal CPU-GPU transfer
-
-### 4. O(1) Memory Reset
-
-```rust
-// Per-page arena allocation
-arena.reset();  // O(1) - just reset bump pointer
-```
-
-- No garbage collection pauses
-- Predictable memory usage
-- Fast navigation
-- No memory leaks
-
-## Comparison with Other Engines
-
-### Memory Usage (Target)
-
-| Engine | Idle | Simple Page | Complex Page |
-|--------|------|-------------|--------------|
-| Chromium | ~150MB | ~80MB | ~200MB |
-| Firefox | ~120MB | ~60MB | ~150MB |
-| **Slate** | **~50MB** | **~30MB** | **~80MB** |
-
-### Rendering Performance (Target)
-
-| Metric | Chromium | Firefox | **Slate** |
-|--------|----------|---------|-----------|
-| Layout (60 FPS) | ~8ms | ~10ms | **< 16ms** |
-| Paint | ~4ms | ~5ms | **< 8ms** |
-| Composite | ~2ms | ~3ms | **< 4ms** |
-
-### JavaScript Performance (Target)
-
-| Benchmark | V8 (Chromium) | SpiderMonkey (Firefox) | **Boa (Slate)** |
-|-----------|---------------|------------------------|-----------------|
-| Speedometer 3.0 | ~450 | ~380 | **> 400** |
-| JetStream 2 | ~200 | ~180 | **> 150** |
-
-*Note: Slate targets based on design goals. Actual measurements TBD.*
-
-## Benchmark Results
-
-### Latest Run
-
-Run benchmarks to generate results:
+Recommended timing run:
 
 ```bash
-./scripts/performance_report.sh
+python3 scripts/browser_engine_benchmark.py --profile release --iterations 10 --warmups 2
 ```
 
-Results will be saved to `reports/performance_YYYYMMDD_HHMMSS.md`
+Use debug runs to verify functionality quickly. Use release runs for timing comparisons.
 
-### Criterion Reports
+## Benchmark Areas
 
-HTML reports are generated in `target/criterion/`:
+### Dispatcher
 
-```bash
-# View in browser
-xdg-open target/criterion/report/index.html
-```
+The dispatcher benchmark focuses on translation overhead in `slate-kernel` and `slate-dispatcher`.
 
-## Flamegraph Analysis
+Typical measurements:
 
-Generate flamegraph for profiling:
+- element creation translation
+- inline style translation
+- append-child translation
 
-```bash
-# Install flamegraph
-cargo install flamegraph
+Dispatcher benchmarks are useful for catching instruction-count regressions. They are not enough to prove real page performance by themselves.
 
-# Generate flamegraph
-./scripts/benchmark.sh --flamegraph
+### CSS Selector Matching
 
-# View
-xdg-open flamegraph.svg
-```
+The CSS benchmark area focuses on selector matching and cascade-related work in `slate-css`.
 
-## Continuous Benchmarking
+Typical measurements:
 
-### Save Baseline
+- simple selectors
+- compound selectors
+- specificity calculation
+- cascade resolution
 
-```bash
-./scripts/benchmark.sh --save baseline_v0.1.0
-```
+### Layout
 
-### Compare with Baseline
+The layout benchmark area focuses on the engines in `slate-layout`.
 
-```bash
-./scripts/benchmark.sh --compare
-```
+Typical measurements:
 
-### CI Integration
+- flexbox row/column layouts
+- wrapping behavior
+- alignment modes
+- nested layout structures
 
-Add to `.github/workflows/benchmark.yml`:
+### Full Pipeline
 
-```yaml
-name: Benchmarks
+The full pipeline benchmark measures end-to-end work across parsing, dispatch, state application, and rendering.
 
-on:
-  push:
-    branches: [main]
-  pull_request:
+It is the most useful benchmark when validating changes that affect the entire engine flow.
 
-jobs:
-  benchmark:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - run: ./scripts/benchmark.sh --all
-      - uses: actions/upload-artifact@v3
-        with:
-          name: benchmark-results
-          path: target/criterion/
-```
+Full pipeline results should include:
 
-## Performance Optimization Tips
+- command used
+- profile used
+- number of warmups and iterations
+- generated report path
+- whether render artifacts were produced
+- whether GPU rendering was skipped because no adapter was available
 
-### 1. Profile First
+## Legacy Shell Scripts
 
-```bash
-# Generate flamegraph
-cargo flamegraph --bin slate-phase2
+`scripts/benchmark.sh`, `scripts/compare_benchmarks.sh`, and `scripts/performance_report.sh` are older helper scripts. Prefer `scripts/browser_engine_benchmark.py` for current high-level engine benchmarking because it validates artifacts and writes structured reports.
 
-# Identify hot paths
-# Optimize based on data, not intuition
-```
+The older shell scripts can still be useful for local quick checks, but their generated prose may contain older framing. Treat the Python harness as the current source of structured benchmark reporting.
 
-### 2. Use Release Mode
+## Notes on Targets
 
-```bash
-# Always benchmark in release mode
-cargo bench --release
-```
+The numeric performance targets in older documents should be treated as goals, not guarantees. Use them as directional markers and confirm actual results with the current code and hardware.
 
-### 3. Minimize Allocations
+When adding a new target, include:
 
-```rust
-// Bad: Allocates on every call
-fn process(data: &str) -> String {
-    data.to_string()
-}
+- what command measures it
+- what profile it uses
+- what hardware or environment it was observed on
+- what output proves success
 
-// Good: Reuse buffer
-fn process(data: &str, buf: &mut String) {
-    buf.clear();
-    buf.push_str(data);
-}
-```
+## Related Documents
 
-### 4. Use SIMD When Possible
+- [FEATURES.md](./FEATURES.md)
+- [ROADMAP.md](./ROADMAP.md)
 
-```rust
-// Consider SIMD for hot loops
-#[cfg(target_arch = "x86_64")]
-use std::arch::x86_64::*;
-```
+## Python Harness Report Shape
 
-### 5. Batch Operations
+The Python harness writes both JSON and Markdown. The JSON file is the better source for automation, while the Markdown file is easier to read in reviews.
 
-```rust
-// Bad: Individual calls
-for item in items {
-    kernel.submit(item)?;
-}
+Important JSON fields:
 
-// Good: Batch submission
-kernel.submit_batch(&items)?;
-```
+| Field | Meaning |
+| --- | --- |
+| `schema_version` | Report schema version for future compatibility. |
+| `generated_at_unix` | Generation timestamp. |
+| `profile` | Cargo profile used by the run. |
+| `iterations` | Number of measured iterations. |
+| `warmups` | Number of warmup runs before measurement. |
+| `build_ms` | Time spent building binaries, if build was not skipped. |
+| `platform` | Basic OS, machine, and Python information. |
+| `scenarios` | Per-scenario timing, metrics, artifacts, and excerpts. |
 
-## Known Performance Issues
+Each scenario records:
 
-### 1. Text Shaping (Pending)
-- Harfbuzz integration not yet complete
-- Complex script support pending
-- **Impact:** Text rendering slower than target
+- scenario name
+- binary name
+- description
+- timing summary
+- extracted engine metrics
+- per-iteration stdout/stderr excerpt
+- generated artifact metadata when applicable
 
-### 2. Image Decoding
-- Some formats use pure Rust decoders
-- Could benefit from SIMD optimization
-- **Impact:** Image loading ~10% slower
+Artifact metadata can include:
 
-### 3. JavaScript JIT
-- Boa uses interpreter, no JIT yet
-- Cranelift integration planned
-- **Impact:** JS execution ~3x slower than V8
+- existence
+- byte size
+- SHA-256 hash
+- PPM width
+- PPM height
+- PPM max color value
 
-## Future Optimizations
+## Benchmark Interpretation Guide
 
-### Phase 6 (Planned)
+Use benchmark output carefully.
 
-1. **Multi-process Architecture**
-   - Process-per-tab isolation
-   - Parallel layout computation
-   - GPU process separation
+If `script_kernel_gpu_pipeline` says `gpu_skipped: true`, the run did not measure the GPU render path. That is still useful as a smoke test for earlier stages, but it should not be used as a GPU performance number.
 
-2. **SIMD Layout Fast Path**
-   - Vectorized geometry calculations
-   - Parallel constraint solving
+If a PPM artifact exists with expected dimensions, that proves the demo wrote an image-shaped output. It does not prove that the visual rendering is correct in a browser-compliance sense. Visual correctness needs snapshot testing, pixel comparisons, or manual review.
 
-3. **JIT Compilation**
-   - Cranelift integration
-   - Tiered compilation
-   - Inline caching
+If one iteration is much slower than others, check for:
 
-4. **Advanced GPU Optimizations**
-   - Texture atlasing
-   - Occlusion culling
-   - Layer compositing
+- first-run build effects
+- shader or GPU initialization
+- OS scheduling noise
+- debug vs release profile mismatch
+- background processes
+- artifact directory creation
 
-5. **Memory Compression**
-   - Compressed textures
-   - Shared memory for images
-   - Tab discarding
+## Adding New Benchmarks
 
-## Contributing
+When adding a benchmark, decide which level it belongs to:
 
-To add new benchmarks:
+| Level | Use when | Tool |
+| --- | --- | --- |
+| Micro | Measuring a small function or algorithm | Criterion |
+| Crate-level | Measuring a subsystem in isolation | Criterion or targeted test harness |
+| Demo pipeline | Measuring real engine demo behavior | Python harness |
+| Artifact validation | Confirming generated files exist and are shaped correctly | Python harness |
 
-1. Create benchmark file in `crates/<crate>/benches/`
-2. Add to `Cargo.toml`:
-   ```toml
-   [[bench]]
-   name = "my_benchmark"
-   harness = false
-   ```
-3. Use criterion:
-   ```rust
-   use criterion::{criterion_group, criterion_main, Criterion};
-   
-   fn bench_my_feature(c: &mut Criterion) {
-       c.bench_function("my_feature", |b| {
-           b.iter(|| {
-               // Code to benchmark
-           });
-       });
-   }
-   
-   criterion_group!(benches, bench_my_feature);
-   criterion_main!(benches);
-   ```
+For a new Python harness scenario:
 
-## Resources
+1. Add a `Scenario` entry in `scripts/browser_engine_benchmark.py`.
+2. Point it at a real binary.
+3. Add a parser that extracts meaningful stdout/stderr metrics.
+4. List expected artifacts if the scenario writes files.
+5. Run one debug iteration.
+6. Document the scenario in this file.
 
-- [Criterion.rs Documentation](https://bheisler.github.io/criterion.rs/book/)
-- [Rust Performance Book](https://nnethercote.github.io/perf-book/)
-- [Flamegraph Guide](https://www.brendangregg.com/flamegraphs.html)
-- [Web Platform Tests](https://web-platform-tests.org/)
+For a new Criterion benchmark:
 
----
-
-**Last Updated:** $(date)
-**Slate Engine Version:** 0.1.0 (Phase 5 Complete)
+1. Add a bench target to the crate `Cargo.toml`.
+2. Keep sample input deterministic.
+3. Avoid measuring setup unless setup is part of the behavior being studied.
+4. Document the command in this file.
+5. Prefer names that describe the subsystem and operation.

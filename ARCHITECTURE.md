@@ -1,337 +1,351 @@
 # Slate Engine Architecture
 
-## Overview
+This document describes the current architecture of the Slate workspace as it exists in source. It is intentionally technical and avoids claims that are not backed by the codebase.
 
-Slate is a production-ready browser engine built in Rust with a revolutionary architecture that eliminates the "interpretation tax" found in mainstream engines (Blink, WebKit, Gecko).
+For a higher-level overview, start with [README.md](./README.md). For concrete crate-level capability notes, see [FEATURES.md](./FEATURES.md) and [CAPABILITIES.md](./CAPABILITIES.md).
 
-## Core Philosophy
+## Architectural Motivation
 
-**API Elimination via Atomic Reduction**: Every Web API call reduces to 200-500 atomic primitives across three domains (Layout, Render, State) before execution. No interpretation, only translation.
+Most browser engines have many large subsystems that interact through complex state: parsing, style, layout, scripting, networking, painting, compositing, GPU work, storage, events, and platform integration. Slate is organized around a smaller internal contract: transform input into explicit instructions, apply those instructions to state, and render from the resulting primitives.
 
-## Architecture Layers
+The important point is not that this automatically makes the engine complete or faster. The point is that it creates a clear place to inspect behavior:
 
+- before dispatch: web-facing input is still high-level
+- after dispatch: behavior is represented as AIS
+- after kernel application: state can be snapshotted
+- after rendering: output artifacts can be checked
+
+That makes the architecture easier to test incrementally.
+
+## System Overview
+
+Slate is structured as a pipeline of explicit transformations:
+
+```text
+Input source
+  -> parser / runtime / compatibility layer
+  -> WebCall
+  -> dispatcher
+  -> AtomicInstruction stream
+  -> kernel
+  -> state store + arena
+  -> renderer
 ```
+
+The core architectural choice is to keep the engine’s internal contract narrow:
+
+- `WebCall` is the front-door representation for higher-level actions.
+- `AtomicInstruction` is the internal execution form.
+- The kernel applies instructions into deterministic state.
+- Rendering is a separate headless stage.
+
+## Data Boundaries
+
+Slate has several important boundaries:
+
+| Boundary | Input | Output | Responsibility |
+| --- | --- | --- | --- |
+| Parser/runtime to dispatcher | web-facing call | `WebCall` | Convert user-facing activity into a normalized internal call. |
+| Dispatcher to kernel | `WebCall` | AIS stream | Normalize and decompose without owning global engine state. |
+| Kernel to state | AIS stream | snapshot/state mutation | Apply deterministic state changes and expose snapshots. |
+| Kernel to renderer | render instructions | frame output | Hand visual primitives to a headless renderer. |
+
+Keeping those boundaries visible helps prevent one subsystem from silently taking over another subsystem’s job.
+
+## Top-Level Layers
+
+### 1. Front-End Sources
+
+These active workspace crates produce or model web-facing behavior:
+
+- `slate-script`
+- `slate-network`
+- `slate-webapi`
+- `slate-html`
+- `slate-css`
+- `slate-events`
+- `slate-dom`
+
+Some of these are compatibility layers or staged surfaces rather than complete browser implementations.
+
+The repository also contains experimental directories for `slate-wasm`, `slate-workers`, `slate-websocket`, `slate-webgl`, and `slate-storage`. They are not root workspace members at the moment, so architecture notes should treat them as staged code rather than active workspace components.
+
+Front-end sources should be treated as producers of data, not as owners of the whole engine. A parser can create tree structures or calls. A compatibility layer can translate API-like operations. A script bridge can emit owned calls. None of those layers should bypass the dispatcher/kernel path when the goal is to exercise the core engine model.
+
+### 2. Translation Layer
+
+`slate-dispatcher` is the central translation layer. Its job is to normalize and decompose web-facing input into AIS.
+
+Key traits visible in source:
+
+- stateless API surface
+- deterministic output for identical input
+- single-pass decomposition model
+- small-stream batch support
+
+The dispatcher is where high-level intent becomes engine work. This is the layer to inspect when a demo emits too many instructions, misses a state mutation, or produces render primitives that do not match expectations.
+
+### 3. Kernel and State
+
+`slate-kernel` is the orchestration point. It owns:
+
+- the deterministic state store
+- the page-scoped arena allocator
+- instruction submission and replay entry points
+
+`slate-state` provides the state model, while `slate-arena` provides fast page-scoped allocations with O(1) reset semantics.
+
+The kernel is deliberately small in concept: submit calls, replay instructions, expose snapshots, and manage page-lifecycle allocation. That makes it a natural integration point for demos and higher-level tests.
+
+### 4. Rendering
+
+`slate-render` is a headless `wgpu` renderer. It consumes AIS render primitives and writes into an offscreen texture. The renderer is intentionally separate from any windowing layer.
+
+Headless rendering is valuable because it can be tested without a browser shell. The benchmark harness can verify that a PPM file exists, has expected dimensions, and has stable bytes or hashes across runs.
+
+## Crate Responsibilities
+
+### `slate-ais`
+
+Core internal IR for the engine:
+
+- geometry primitives
+- render primitives
+- state primitives
+- domain-tagged atomic instructions
+
+This crate is the shared contract between dispatch, state, and render.
+
+When this crate changes, the blast radius is broad. A new primitive or changed primitive shape can affect dispatch, state application, rendering, demos, and benchmarks.
+
+### `slate-dispatcher`
+
+The dispatcher turns normalized web-facing calls into instruction streams.
+
+Observed structure:
+
+- `normalize`
+- `decompose`
+- `dispatch`
+- `dispatch_batch`
+
+Good dispatcher changes should be easy to validate by checking:
+
+- emitted instruction count
+- instruction domain mix
+- error behavior for malformed inputs
+- compatibility with `Kernel::submit` and `Kernel::submit_batch`
+
+### `slate-state`
+
+The state store is designed around deterministic snapshots and repeatable application of instructions. The source emphasizes predictability over hidden side effects.
+
+State changes should remain replay-friendly. If a behavior depends on wall-clock time, thread scheduling, file system state, or non-deterministic iteration order, it should be isolated and documented.
+
+### `slate-arena`
+
+The arena is page-scoped and intended for short-lived allocations tied to a page lifecycle.
+
+### `slate-kernel`
+
+The kernel owns the integration flow:
+
+- accepts web calls
+- translates them into AIS
+- applies them to state
+- exposes snapshots
+- supports replay
+
+### `slate-render`
+
+The renderer uses `wgpu` in headless mode and is structured around batched primitives and readback support.
+
+Rendering should be validated at two levels:
+
+- API level: render commands are accepted and processed
+- artifact level: generated image data exists and has expected dimensions
+
+### `slate-text`
+
+Text infrastructure includes shaping, glyph, layout, and rasterizer support code. The crate is structured as a real subsystem, but feature completeness should be verified against code rather than assumed from old docs.
+
+### `slate-css`
+
+CSS support includes parser, selector, cascade, values, and parser integration modules.
+
+### `slate-html`
+
+HTML support includes parser and tree-related modules.
+
+### `slate-events`
+
+The event system models event dispatch, listener registration, and event types.
+
+### `slate-layout`
+
+Layout support includes flexbox, block, inline, and grid components.
+
+Layout code is usually best tested with targeted fixtures. Full pipeline demos are useful, but they can hide whether a regression came from parsing, style, layout, rasterization, or artifact output.
+
+## ASCII Architecture Map
+
+```text
 ┌─────────────────────────────────────────────────────────────┐
-│  Web Platform (HTML5, CSS3, JavaScript, Web APIs)           │
+│ Input sources: script, network, html, compatibility layers  │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  High-Level Engines                                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ HTML5 Parser │  │  CSS Engine  │  │ Event System │      │
-│  │  (slate-html)│  │ (slate-css)  │  │(slate-events)│      │
-│  └──────────────┘  └──────────────┘  └──────────────┘      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ Text Engine  │  │Layout Engine │  │  JS Runtime  │      │
-│  │ (slate-text) │  │(slate-layout)│  │(slate-script)│      │
-│  └──────────────┘  └──────────────┘  └──────────────┘      │
+│ slate-dispatcher                                             │
+│ normalize -> decompose -> instruction stream                │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  Dispatcher (slate-dispatcher)                               │
-│  Stateless translation: WebCall → AIS stream                 │
-│  (a) Intercept  (b) Normalize  (c) Decompose  (d) Inline    │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼ AtomicInstruction stream
-┌─────────────────────────────────────────────────────────────┐
-│  Kernel + State Store (slate-kernel + slate-state)           │
-│  Deterministic execution with snapshots                      │
+│ slate-kernel                                                 │
+│ instruction application -> snapshot -> replay                │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  GPU Pipeline (slate-render)                                 │
-│  Vulkan / Metal / WebGPU - Zero-copy instanced rendering     │
+│ slate-state + slate-arena                                    │
+│ deterministic storage + page-scoped allocation               │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│ slate-render                                                 │
+│ headless wgpu pipeline -> offscreen texture                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Crate Breakdown
+## Design Invariants
 
-### Core Infrastructure
+These are the architectural properties most strongly reflected in the code:
 
-#### `slate-ais` - Atomic Instruction Set
-The machine code of Slate. Three domains:
-- **Layout**: Pure geometry (SetPosition, SetSize, SetClip, FlexBasis)
-- **Render**: GPU commands (FillRect, StrokeRect, DrawText, FillPath)
-- **State**: Functional state deltas (deterministic, replayable)
+1. Keep the internal instruction surface small.
+2. Prefer deterministic transformations over implicit behavior.
+3. Separate translation from execution.
+4. Keep rendering headless and explicit.
+5. Keep page-lifecycle allocation isolated in the arena.
 
-Target: 200-500 total primitives. Growth = design failure.
+## Failure Modes To Watch
 
-#### `slate-dispatcher` - Translation Bridge
-Stateless Wine-like syscall translator:
-- Input: `WebCall<'a>` (borrowed from JS/HTML)
-- Output: `Stream` of `AtomicInstruction`
-- Pipeline: Normalize → Decompose → Inline
-- Zero state, pure function, O(n) single-pass
+The architecture can drift in a few predictable ways:
 
-#### `slate-state` - Deterministic Store
-- `slotmap` + `dashmap` for concurrent access
-- Immutable snapshots for time-travel debugging
-- `(snapshot, inputs) → snapshot'` is pure
-- No GC, no wall clock, no allocator leaks
+- documentation describes inactive crate directories as active workspace crates
+- demos succeed while crate APIs remain incomplete
+- benchmark docs list commands that no longer exist
+- compatibility layers start claiming browser-standard completion without tests
+- render artifacts are generated but not verified
+- state transitions become dependent on environment details
 
-#### `slate-arena` - Per-Page Allocator
-- `bumpalo` arena per page
-- O(1) reset on navigation
-- No garbage collection overhead
+The current documentation intentionally calls out those risks so future changes can be reviewed against them.
 
-#### `slate-kernel` - Orchestrator
-- Consumes AIS streams
-- Manages state store
-- Coordinates rendering
-- Hosts demo binaries
+## Validation Strategy
 
-### Phase 2: Execution & Visualization
+Useful validation layers:
 
-#### `slate-render` - GPU Renderer
-- wgpu-based (Vulkan/Metal/WebGPU)
-- Instanced drawing (single draw call per frame)
-- No CPU paint phase
-- Zero-copy to GPU (`repr(C)` primitives)
-- Offscreen Rgba8UnormSrgb target
+- `cargo check --workspace` for compile coverage over active workspace members
+- targeted crate tests for local behavior
+- Criterion benchmarks for micro and crate-level measurements
+- `scripts/browser_engine_benchmark.py` for demo pipeline measurement and artifact validation
+- manual review of generated docs and reports before publishing
 
-#### `slate-script` - JavaScript Runtime
-- Boa `Context` on isolated thread
-- Three host functions only:
-  - `__slate_create_element`
-  - `__slate_append_child`
-  - `__slate_set_style`
-- Pushes `OwnedWebCall` to buffer
-- Kernel drains buffer each frame
-- No DOM access, no wall time, deterministic
+## Subsystem Contracts
 
-#### `slate-network` - Async Fetcher
-- tokio + reqwest streaming
-- `IncrementalParser` for chunked HTML
-- `OriginPolicy` sandbox
-- First AIS before full download
+Each subsystem should have a clear contract. These contracts are not formal Rust traits in every case; they are engineering boundaries the code and docs should preserve.
 
-### Phase 3: Modern Browser Features
+| Subsystem | Owns | Should not own |
+| --- | --- | --- |
+| AIS | instruction vocabulary and primitive types | parsing policy, DOM semantics, network behavior |
+| Dispatcher | normalization and decomposition | global state, rendering lifecycle, async runtime ownership |
+| State | deterministic store and snapshots | parsing, GPU submission, network access |
+| Arena | page-scoped allocation | long-lived persistent storage, observable state semantics |
+| Kernel | orchestration and replay | browser UI, standards compatibility claims |
+| Renderer | offscreen rendering and readback | DOM mutation, CSS parsing, script execution |
+| HTML/CSS/DOM/Layout | document modeling and visual computation | GPU device lifecycle, benchmark reporting |
+| Web API compatibility | adapter and translator surfaces | full browser implementation claims |
 
-#### `slate-text` - Text Rendering
-**Status**: Foundation complete, harfbuzz integration pending
+If a change violates one of these boundaries, it may still be correct, but the architecture document should be updated to explain why the boundary moved.
 
-Features:
-- Font loading and caching (`FontCache`)
-- Text shaping with BiDi support (`TextShaper`)
-- Line breaking and word wrapping (`LineBreaker`)
-- Glyph positioning (`GlyphRun`, `PositionedGlyph`)
-- Font metrics and typography
+## Instruction Lifecycle
 
-Architecture:
-```rust
-Text → TextShaper → GlyphRun → LineBreaker → TextLayout → RenderPrimitive::DrawText
-```
+The lifecycle of an operation should be inspectable at several points:
 
-#### `slate-css` - CSS3 Engine
-**Status**: Core complete, parser integration pending
+1. A high-level source creates or implies a web-facing action.
+2. The action is represented as a borrowed or owned call.
+3. The dispatcher validates and normalizes that call.
+4. The dispatcher decomposes it into AIS.
+5. The kernel applies the AIS to state.
+6. Render primitives are passed to rendering code when applicable.
+7. Demos or benchmarks record stdout, metrics, and artifacts.
 
-Features:
-- Full CSS3 selector matching
-- Specificity calculation
-- Cascade resolution
-- Computed styles with inheritance
-- Property parsing (100+ properties)
+This lifecycle gives contributors multiple debugging hooks. If a visual output is wrong, inspect whether the source emitted the right call, whether dispatch produced the right primitive, whether state changed correctly, and whether the renderer produced the expected artifact.
 
-Components:
-- `Selector`: Universal, Type, Class, ID, Attribute, Pseudo-class, Combinator
-- `Specificity`: (inline, ids, classes, elements) ordering
-- `CascadeEngine`: Matches selectors, resolves cascade, computes styles
-- `SelectorMatcher`: Fast node-to-selector matching
+## Determinism Model
 
-#### `slate-html` - HTML5 Parser
-**Status**: Foundation complete, html5ever integration pending
+Slate’s current docs use “deterministic” as an architectural preference, not as a blanket proof for all code. The intended deterministic core is:
 
-Features:
-- HTML5 spec-compliant parsing
-- Error recovery and quirks mode
-- DOCTYPE handling
-- Streaming incremental parsing
-- DOM tree construction
+- the same normalized input should produce the same instruction stream
+- replaying the same instruction stream should produce the same state result
+- demo output should be stable enough to compare across local runs when environment conditions are unchanged
 
-Output:
-- `DomTree`: Node hierarchy
-- `Vec<OwnedWebCall>`: AIS-ready operations
+Things that can weaken determinism:
 
-#### `slate-events` - Event System
-**Status**: Complete
+- GPU adapter differences
+- non-deterministic map iteration
+- wall-clock timestamps
+- random data
+- file system state
+- network timing
+- async scheduling
 
-Features:
-- Full DOM event model
-- Bubbling and capturing phases
-- `preventDefault()` and `stopPropagation()`
-- Event types: Mouse, Keyboard, Touch, Pointer, Wheel, Focus, Drag, Scroll
-- Event delegation and listener management
+When any of those are necessary, isolate them at the boundary and avoid letting them leak into core state semantics.
 
-Architecture:
-```rust
-Event → Capturing Phase → At Target → Bubbling Phase
-```
+## Rendering Architecture Notes
 
-#### `slate-layout` - Layout Engines
-**Status**: Core algorithms complete
+Rendering currently has two important forms in the repository:
 
-Engines:
-1. **FlexLayout**: CSS Flexbox
-   - Flex direction, wrap, justify-content, align-items
-   - Flex grow/shrink/basis
-   - Gap support
-   
-2. **GridLayout**: CSS Grid
-   - Template columns/rows
-   - Track sizing (fr, fixed, auto, minmax)
-   - Grid item placement
-   - Gap support
+- `slate-render` for headless `wgpu` rendering
+- `slate-rasterizer` for CPU display-list style output
 
-3. **BlockLayout**: Normal flow
-   - Vertical stacking
-   - Margin collapse
-   - Block formatting context
+Both are useful, but they answer different questions. CPU raster output is easier to verify in simple demos because the generated artifact is deterministic and easy to inspect. GPU rendering is closer to the intended high-performance path, but it depends on local adapter availability.
 
-4. **InlineLayout**: Text flow
-   - Horizontal flow with wrapping
-   - Baseline alignment
-   - Line height
+The benchmark harness handles this by recording whether a GPU path was skipped and by validating generated PPM artifacts when they exist.
 
-## Key Invariants (Non-Negotiable)
+## Workspace Boundary Notes
 
-1. **Closure under decomposition**: If a Web call cannot reduce to AIS, it's not supported. No fallback paths.
+The root workspace is the source of truth for active crates. A directory under `crates/` is not automatically active. This matters for architecture because inactive directories:
 
-2. **Determinism**: `(snapshot, input_sequence) → snapshot'` is pure. No wall clock, no thread scheduling, no allocator addresses in observable state.
+- may not compile under normal workspace commands
+- may depend on older dependency versions
+- may not be covered by benchmark or test workflows
+- may contain useful design sketches without being productionized
 
-3. **Single-pass dispatch**: Dispatcher produces AIS in O(n). No fix-point, no retry, no layout thrashing.
+When a staged directory becomes active, update these files together:
 
-4. **Zero-copy to GPU**: Render primitives are `repr(C)` and sized for direct upload. No intermediate CPU paint buffer.
+- root `Cargo.toml`
+- [README.md](./README.md)
+- [CAPABILITIES.md](./CAPABILITIES.md)
+- [FEATURES.md](./FEATURES.md)
+- [BENCHMARKS.md](./BENCHMARKS.md), if it introduces benchmarkable behavior
 
-5. **No GC**: Per-page state in `bumpalo` arena. O(1) reset on navigation. `unsafe` only with benchmark justification.
+## Review Checklist For Architecture Changes
 
-## Performance Characteristics
+- Does the change keep input translation separate from state application?
+- Does the change keep rendering separate from parsing and DOM mutation?
+- Does the change require a new AIS primitive?
+- Does an existing primitive already express the behavior?
+- Does the change affect replay or snapshot behavior?
+- Does the change make a staged crate part of the active workspace?
+- Does benchmark documentation need an update?
+- Does the README still describe the repository accurately?
 
-### Memory
-- Per-page arena allocation: O(1) reset
-- No garbage collection pauses
-- Shared font/image caches
-- Target: <50MB per average page
+## Cross-References
 
-### Speed
-- Single-pass dispatch: O(n) over input
-- Parallel layout: SIMD-friendly primitives
-- Instanced GPU rendering: 1 draw call/frame
-- Target: <500ms first meaningful paint
-
-### Scalability
-- Embarrassingly parallel layout (pure geometry)
-- Lock-free state store (`dashmap`)
-- Multi-threaded dispatch (Phase 4)
-- Process-per-tab isolation (Phase 4)
-
-## Security Model
-
-### Current (Phase 3)
-- Origin-based network sandbox
-- No eval, no Function constructor
-- Isolated JS runtime (no DOM access)
-- Deterministic execution (no timing attacks)
-
-### Planned (Phase 4)
-- Multi-process architecture
-- Renderer process isolation
-- GPU process separation
-- Seccomp filters (Linux)
-- Sandbox profiles (macOS)
-- AppContainer (Windows)
-
-## Testing Strategy
-
-### Unit Tests
-- Per-crate test suites
-- Property-based testing for layout
-- Snapshot testing for rendering
-
-### Integration Tests
-- End-to-end pipeline tests
-- Real HTML/CSS rendering
-- JavaScript integration
-
-### Compliance (Phase 4)
-- Web Platform Tests (WPT)
-- Acid3 test
-- HTML5 test suite
-- CSS test suite
-- JavaScript test262
-
-Target: >95% WPT pass rate
-
-## Build System
-
-### Profiles
-- **Release**: Fat LTO, single codegen unit, max optimization
-- **Bench**: Thin LTO, debug symbols for flamegraphs
-- **Dev**: Fast iteration, optimized dependencies
-
-### Dependencies
-- Minimal external deps
-- No proc-macro heavy crates in hot paths
-- Prefer `no_std` where possible
-
-## Future Roadmap
-
-### Phase 4: Production Ready (6-12 months)
-- [ ] Multi-process architecture
-- [ ] WebGL/Canvas 2D
-- [ ] Video/Audio elements
-- [ ] WebAssembly integration
-- [ ] Service Workers
-- [ ] IndexedDB
-- [ ] DevTools protocol
-
-### Phase 5: Performance Leadership (12-18 months)
-- [ ] SIMD layout fast path
-- [ ] JIT compilation (Cranelift)
-- [ ] HTTP/3 with QUIC
-- [ ] Advanced GPU optimizations
-- [ ] Memory compression
-- [ ] Faster than Chromium
-
-### Phase 6: Ecosystem (18-24 months)
-- [ ] Embedder API (C FFI)
-- [ ] Language bindings (Python, Node.js)
-- [ ] WebView component
-- [ ] Community contributions
-- [ ] Real-world adoption
-
-## Success Metrics
-
-- **Performance**: Speedometer 3.0 > 400
-- **Compliance**: WPT pass rate > 95%
-- **Memory**: Average page < 50MB
-- **Speed**: First meaningful paint < 500ms
-- **Security**: Zero critical vulnerabilities
-- **Adoption**: 1000+ stars, 100+ contributors
-
-## Contributing
-
-Before adding code, ask: *Does this re-introduce abstraction bloat?*
-
-Rejected reasons:
-- "It's more ergonomic"
-- "It matches the spec more literally"
-- "It's how Chromium does it"
-
-Accepted reasons:
-- Shrinks the primitive set
-- Tightens determinism
-- Removes a CPU-bound phase
-- Improves security
-- Measurable performance gain
-
-## License
-
-Apache-2.0 OR MIT, at your option.
-
----
-
-**This document is the contract. The code is downstream of it.**
+- [README.md](./README.md) for project entry points and repository map.
+- [FEATURES.md](./FEATURES.md) for capability-by-capability status.
+- [CAPABILITIES.md](./CAPABILITIES.md) for a concise component summary.
+- [BENCHMARKS.md](./BENCHMARKS.md) for measurement targets and commands.
+- [ROADMAP.md](./ROADMAP.md) for planned work.

@@ -1,331 +1,173 @@
-# Slate Engine - Tam Tarayıcı Motoru Yol Haritası
+# Slate Engine Roadmap
 
-## 🎯 Hedef
-Slate'i proof-of-concept'ten tam özellikli, production-ready bir tarayıcı motoruna dönüştürmek.
+This roadmap documents planned or partially staged work. It should be read alongside [README.md](./README.md), [ARCHITECTURE.md](./ARCHITECTURE.md), and [FEATURES.md](./FEATURES.md).
 
-## 📋 Faz 3: Temel Tarayıcı Özellikleri
+## Guiding Goal
 
-### 3.1 Text Rendering & Typography ⚡ ÖNCELİK
-- [ ] Glyph shaping (harfbuzz entegrasyonu)
-- [ ] Font loading & caching
-- [ ] Text layout primitives (line breaking, word wrap)
-- [ ] Unicode support (BiDi, complex scripts)
-- [ ] Text selection & cursor positioning
-- [ ] Subpixel antialiasing
+Continue turning the current workspace into a more complete browser-engine style system while preserving the explicit dispatch/state/render architecture.
 
-### 3.2 Gelişmiş Layout Engine
-- [ ] CSS Flexbox tam implementasyonu
-- [ ] CSS Grid tam implementasyonu
-- [ ] CSS Box Model (margin, padding, border)
-- [ ] Positioning (absolute, relative, fixed, sticky)
-- [ ] Float & clear
-- [ ] Z-index & stacking contexts
-- [ ] Overflow & scrolling
-- [ ] CSS transforms (2D & 3D)
-- [ ] CSS animations & transitions
+## Roadmap Rules
 
-### 3.3 HTML5 Parser
-- [ ] Tam HTML5 spec uyumlu parser
-- [ ] Error recovery & quirks mode
-- [ ] DOCTYPE handling
-- [ ] Self-closing tags
-- [ ] HTML entities
-- [ ] CDATA sections
-- [ ] Comment handling
-- [ ] Streaming parser optimization
+Roadmap items should stay grounded. A future item belongs here when it is directionally important but not yet reliable enough to describe as a current capability.
 
-### 3.4 CSS Engine
-- [ ] CSS selector engine (tam CSS3 desteği)
-- [ ] Cascade & specificity
-- [ ] CSS inheritance
-- [ ] Computed styles
-- [ ] CSS variables (custom properties)
-- [ ] Media queries
-- [ ] CSS pseudo-elements & pseudo-classes
-- [ ] External stylesheet loading
-- [ ] @import, @media, @keyframes
+When work graduates from roadmap to current state:
 
-### 3.5 DOM API
-- [ ] Tam DOM Level 3 implementasyonu
-- [ ] Element.querySelector / querySelectorAll
-- [ ] DOM manipulation (createElement, appendChild, etc.)
-- [ ] DOM events (addEventListener, removeEventListener)
-- [ ] Event bubbling & capturing
-- [ ] Custom events
-- [ ] MutationObserver
-- [ ] IntersectionObserver
+- update the code or workspace membership first
+- add tests or benchmark coverage where appropriate
+- move the claim into [FEATURES.md](./FEATURES.md) or [CAPABILITIES.md](./CAPABILITIES.md)
+- keep this file focused on what remains ahead
 
-## 📋 Faz 4: İnteraktivite & Medya
+## Near-Term Priorities
 
-### 4.1 Event System
-- [ ] Mouse events (click, mousemove, mousedown, etc.)
-- [ ] Keyboard events (keydown, keyup, keypress)
-- [ ] Touch events (mobile support)
-- [ ] Pointer events
-- [ ] Focus & blur events
-- [ ] Form events (submit, change, input)
-- [ ] Drag & drop API
-- [ ] Wheel & scroll events
+### 1. Documentation and Truthfulness
 
-### 4.2 Form Handling
-- [ ] Input elements (text, password, email, etc.)
-- [ ] Textarea
-- [ ] Select & option
-- [ ] Checkbox & radio
-- [ ] Form validation
-- [ ] File upload
-- [ ] Form submission
+- Keep the public docs aligned with the codebase.
+- Remove stale claims as the source evolves.
+- Link related docs instead of duplicating content.
 
-### 4.3 Medya Desteği
-- [ ] Image rendering (PNG, JPEG, GIF, WebP, SVG)
-- [ ] Image decoding & caching
-- [ ] Canvas API (2D context)
-- [ ] Video element (<video>)
-- [ ] Audio element (<audio>)
-- [ ] Media controls
-- [ ] WebGL support
+Concrete tasks:
 
-### 4.4 SVG & Vector Graphics
-- [ ] SVG parser
-- [ ] SVG rendering (paths, shapes, text)
-- [ ] SVG animations
-- [ ] SVG filters & effects
-- [ ] Canvas-to-SVG integration
+- keep workspace member lists synced with root `Cargo.toml`
+- remove old “phase complete” language unless backed by tests
+- keep benchmark commands executable
+- describe experimental crate directories separately from active crates
 
-## 📋 Faz 5: Modern Web APIs
+### 2. Runtime Completeness
 
-### 5.1 Networking
-- [ ] HTTP/2 support
-- [ ] HTTP/3 / QUIC
-- [ ] WebSocket
-- [ ] Server-Sent Events (SSE)
-- [ ] Fetch API (tam implementasyon)
-- [ ] XMLHttpRequest (legacy compat)
-- [ ] CORS handling
-- [ ] Cookie management
-- [ ] Cache API
-- [ ] Service Workers
+- Fill in missing pieces in the script/runtime compatibility surfaces.
+- Tighten network and storage behavior where currently partial.
+- Improve error handling and surface consistency across crates.
 
-### 5.2 Storage & Persistence
-- [ ] localStorage
-- [ ] sessionStorage
-- [ ] IndexedDB
-- [ ] Cache Storage
-- [ ] File System Access API
+Concrete tasks:
 
-### 5.3 Web Workers & Threading
-- [ ] Web Workers
-- [ ] Shared Workers
-- [ ] Service Workers
-- [ ] Worklets
-- [ ] SharedArrayBuffer
-- [ ] Atomics
+- clarify which Web API modules are active
+- route compatibility outputs through dispatcher/kernel paths
+- add focused tests for translator behavior
+- document unsupported inputs explicitly
 
-### 5.4 WebAssembly
-- [ ] Wasm runtime entegrasyonu
-- [ ] Wasm SIMD
-- [ ] Wasm threads
-- [ ] Wasm-JS interop
-- [ ] Wasm streaming compilation
+### 3. Rendering and Layout
 
-## 📋 Faz 6: Performans & Optimizasyon
+- Expand coverage in layout engines.
+- Continue improving the headless rendering path.
+- Reduce gaps between the demo pipelines and the crate-level APIs.
 
-### 6.1 Rendering Optimizasyonları
-- [ ] Layer compositing
-- [ ] Hardware acceleration
-- [ ] Dirty rect tracking
-- [ ] Incremental layout
-- [ ] Paint caching
-- [ ] GPU texture atlasing
-- [ ] Occlusion culling
+Concrete tasks:
 
-### 6.2 JavaScript Optimizasyonları
-- [ ] JIT compilation (Boa → Cranelift)
-- [ ] Inline caching
-- [ ] Hidden classes
-- [ ] Garbage collection tuning
-- [ ] Async/await optimization
+- keep PPM or equivalent artifact generation stable
+- add fixture-style layout tests
+- measure layout output counts in benchmark reports
+- separate CPU raster and GPU render paths in docs and reports
 
-### 6.3 Network Optimizasyonları
-- [ ] HTTP/3 multiplexing
-- [ ] Resource prioritization
-- [ ] Preload & prefetch
-- [ ] Connection pooling
-- [ ] DNS prefetching
-- [ ] Early hints (103 status)
+### 4. Text and Media
 
-### 6.4 Memory Optimizasyonları
-- [ ] Shared memory for images
-- [ ] Compressed textures
-- [ ] Memory pressure handling
-- [ ] Tab discarding
-- [ ] Resource unloading
+- Continue text shaping and font handling work.
+- Improve image support and decode coverage.
+- Verify how these subsystems integrate with layout and rendering.
 
-## 📋 Faz 7: Güvenlik & Sandbox
+Concrete tasks:
 
-### 7.1 Security Model
-- [ ] Same-origin policy
-- [ ] Content Security Policy (CSP)
-- [ ] Subresource Integrity (SRI)
-- [ ] HTTPS enforcement
-- [ ] Mixed content blocking
-- [ ] XSS protection
-- [ ] Clickjacking protection
+- add format-specific image tests before broad image-support claims
+- benchmark representative text layout inputs
+- document font and glyph behavior in a source-aligned way
 
-### 7.2 Process Sandboxing
-- [ ] Multi-process architecture
-- [ ] Renderer process isolation
-- [ ] GPU process
-- [ ] Network process
-- [ ] Seccomp filters (Linux)
-- [ ] Sandbox profiles (macOS)
-- [ ] AppContainer (Windows)
+## Longer-Term Work
 
-### 7.3 Privacy
-- [ ] Cookie controls
-- [ ] Tracking prevention
-- [ ] Fingerprinting protection
-- [ ] Private browsing mode
-- [ ] Do Not Track
+- Security hardening
+- More complete multi-process separation
+- Deeper platform compatibility
+- Expanded benchmark coverage
+- Better developer tooling around demos and pipeline inspection
 
-## 📋 Faz 8: Developer Tools
+## Open Questions
 
-### 8.1 DevTools Protocol
-- [ ] Chrome DevTools Protocol uyumluluğu
-- [ ] Remote debugging
-- [ ] WebSocket-based protocol
+These are useful design questions for future work:
 
-### 8.2 Inspector
-- [ ] DOM tree inspector
-- [ ] CSS inspector & editor
-- [ ] Computed styles viewer
-- [ ] Box model visualizer
-- [ ] Element picker
+- Which experimental crate directories should become active workspace members first?
+- What is the minimum compatibility target for each web-facing surface?
+- Which artifacts should be stable enough for regression testing?
+- Should benchmark reports include memory measurements in addition to timing?
+- Which demos should become formal integration tests?
 
-### 8.3 Console
-- [ ] JavaScript console
-- [ ] Log levels (log, warn, error, debug)
-- [ ] Object inspection
-- [ ] Stack traces
-- [ ] Performance timing
+## Working Rule
 
-### 8.4 Network Panel
-- [ ] Request/response viewer
-- [ ] Timing waterfall
-- [ ] Headers inspector
-- [ ] Payload viewer
-- [ ] WebSocket frames
+When a roadmap item becomes implemented, it should move into [FEATURES.md](./FEATURES.md) and be reflected in [CAPABILITIES.md](./CAPABILITIES.md). The roadmap is for future work, not a second copy of current state.
 
-### 8.5 Performance Tools
-- [ ] Timeline recording
-- [ ] Frame rate monitor
-- [ ] Memory profiler
-- [ ] CPU profiler
-- [ ] Paint flashing
-- [ ] Layer borders
+## Milestone Candidates
 
-## 📋 Faz 9: Standards Compliance
+### Milestone A: Documentation Baseline
 
-### 9.1 Test Suites
-- [ ] Web Platform Tests (WPT) entegrasyonu
-- [ ] Acid3 test
-- [ ] HTML5 test suite
-- [ ] CSS test suite
-- [ ] JavaScript test262
+Goal: make the repository understandable and honest from a fresh clone.
 
-### 9.2 Accessibility
-- [ ] ARIA support
-- [ ] Screen reader compatibility
-- [ ] Keyboard navigation
-- [ ] Focus management
-- [ ] High contrast mode
-- [ ] Text scaling
+Exit criteria:
 
-### 9.3 Internationalization
-- [ ] Unicode normalization
-- [ ] Locale-aware formatting
-- [ ] RTL (Right-to-Left) support
-- [ ] Complex script shaping
-- [ ] Timezone handling
+- README lists active workspace crates accurately.
+- Experimental directories are separated from active capabilities.
+- Benchmark commands are executable.
+- Web API docs do not claim full browser parity.
+- Roadmap items are not duplicated as current features.
 
-## 📋 Faz 10: Ekosistem & Tooling
+### Milestone B: Workspace Hygiene
 
-### 10.1 Embedder API
-- [ ] C API (FFI)
-- [ ] Rust API
-- [ ] Python bindings
-- [ ] Node.js bindings
-- [ ] WebView component
+Goal: make active workspace membership intentional.
 
-### 10.2 Build System
-- [ ] Incremental compilation
-- [ ] Distributed builds
-- [ ] Cross-compilation
-- [ ] Release automation
-- [ ] Binary size optimization
+Exit criteria:
 
-### 10.3 Documentation
-- [ ] API documentation
-- [ ] Architecture guide
-- [ ] Contributing guide
-- [ ] Performance guide
-- [ ] Security guide
+- every active crate compiles through `cargo check --workspace`
+- crate descriptions and docs match root workspace membership
+- experimental directories either become active or remain clearly staged
+- dependency versions are reviewed before promoting staged crates
 
-### 10.4 Benchmarking
-- [ ] Speedometer benchmark
-- [ ] JetStream benchmark
-- [ ] MotionMark benchmark
-- [ ] Custom AIS benchmarks
-- [ ] Memory benchmarks
+### Milestone C: Pipeline Confidence
 
-## 🎯 Milestone Hedefleri
+Goal: make the core demos reliable enough to catch regressions.
 
-### M1: Temel Web Sayfaları (3-6 ay)
-- Text rendering
-- Temel CSS (box model, flexbox)
-- HTML5 parser
-- Mouse & keyboard events
-- Image rendering
+Exit criteria:
 
-### M2: Modern Web Uygulamaları (6-12 ay)
-- Tam CSS3 desteği
-- Canvas & WebGL
-- Fetch API & WebSocket
-- localStorage & IndexedDB
-- Service Workers
+- `slate-demo` emits stable instruction metrics
+- `slate-phase2` writes a validated raster artifact
+- `slate-pipeline` reports GPU skip status clearly
+- `slate-phase4-demo` reports compatibility-surface metrics
+- Python benchmark reports are generated consistently
 
-### M3: Production Ready (12-18 ay)
-- Multi-process architecture
-- DevTools
-- WPT compliance >90%
-- Performance parity with Firefox
-- Security audit
+### Milestone D: Feature Hardening
 
-### M4: Ekosistem Liderliği (18-24 ay)
-- Chromium'dan daha hızlı
-- Daha düşük memory footprint
-- Embedding API adoption
-- Community contributions
-- Real-world usage
+Goal: move from “source exists” to “behavior is reliable.”
 
-## 📊 Başarı Metrikleri
+Exit criteria:
 
-- **Performance**: Speedometer 3.0 skoru > 400
-- **Compliance**: WPT pass rate > 95%
-- **Memory**: Ortalama sayfa < 50MB
-- **Speed**: İlk anlamlı paint < 500ms
-- **Security**: Sıfır kritik güvenlik açığı
-- **Adoption**: 1000+ GitHub stars, 100+ contributors
+- targeted tests exist for important parser, dispatcher, state, and layout behavior
+- render artifacts have regression checks
+- compatibility surfaces document unsupported behavior
+- roadmap items are promoted only after validation
 
-## 🚀 Hemen Başlanacak İşler
+## Risk Register
 
-1. **Text rendering** - En kritik eksik özellik
-2. **HTML5 parser** - Gerçek web sayfaları için gerekli
-3. **CSS engine** - Selector matching & cascade
-4. **Event system** - İnteraktivite için temel
-5. **Image rendering** - Görsel içerik için gerekli
+| Risk | Why it matters | Mitigation |
+| --- | --- | --- |
+| Docs overclaim standards support | Misleads users and contributors | Use source-aligned language and capability labels. |
+| Experimental crates appear active | Confuses build expectations | Keep active workspace and experimental sections separate. |
+| Benchmarks become stale | Performance claims become untrustworthy | Prefer Python harness and document exact commands. |
+| Demos hide subsystem failures | A successful demo can mask partial behavior | Add targeted tests and extract stage metrics. |
+| Rendering depends on local GPU | Results differ across machines | Record GPU skip status and artifact metadata. |
+| AIS grows without review | Internal contract becomes harder to reason about | Require design justification and validation plan. |
 
----
+## Decision Log Template
 
-**Not**: Bu yol haritası agresif ama gerçekçi. Her faz paralel olarak geliştirilebilir.
-Topluluk katkıları ile 18-24 ayda production-ready bir motor hedefliyoruz.
+Use this shape when recording future architectural decisions:
+
+```md
+## Decision: Short Name
+
+Context:
+- What problem forced the decision?
+
+Decision:
+- What was chosen?
+
+Consequences:
+- What becomes easier?
+- What becomes harder?
+
+Validation:
+- What command, test, or benchmark proves the decision works?
+```

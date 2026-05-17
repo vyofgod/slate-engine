@@ -1,330 +1,92 @@
 # Slate Web API Compatibility Layer
 
-**Slate does NOT implement Web APIs.** Instead, it provides a **Wine-like translation layer** that converts high-level Web API calls into Slate's Atomic Instruction Set (AIS).
+This crate documents the compatibility surface around web-facing APIs. It should be read together with the root [README](../../README.md) and [ARCHITECTURE.md](../../ARCHITECTURE.md).
 
-## Philosophy
+## Purpose
 
-Just like Wine translates Windows API calls to Linux syscalls without implementing Windows, Slate translates Web API calls to atomic primitives without implementing the Web platform.
+`slate-webapi` is a translation-oriented crate. The current source emphasizes converting web-facing actions into the engine’s internal model rather than re-creating a full browser implementation.
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  Wine: Windows APIs → Linux syscalls                    │
-│  Slate: Web APIs → Atomic Instructions                  │
-└─────────────────────────────────────────────────────────┘
-```
+The key distinction is scope: this crate is about compatibility surfaces and translation behavior. It should not be documented as if it alone provides a complete DOM, event loop, network stack, renderer, or browser shell.
 
-## Architecture
+## Current Modules
 
-```
-JavaScript Code
-     ↓
-Web API Call (e.g., createElement)
-     ↓
-WebApiTranslator ← Wine-like translation layer (NO IMPLEMENTATION)
-     ↓
-Atomic Instructions (AIS)
-     ↓
-Kernel → GPU
-```
+The public module list in source includes:
 
-## Key Principle: Translation, Not Implementation
+- `translator`
+- `canvas`
+- `forms`
+- `svg`
 
-### ❌ Traditional Browser (Chromium)
+Some older module names are commented out in source and should not be treated as active public APIs.
 
-```rust
-// Implements full DOM
-fn create_element(tag: &str) -> Element {
-    let element = Element::new(tag);
-    element.attach_to_document();
-    element.setup_event_listeners();
-    // ... 100+ lines of implementation
-    element
-}
+When adding or re-enabling a module, update this list only after the module is exported from `src/lib.rs` and covered by at least a basic compile or integration check.
+
+## Translation Model
+
+The general pattern is:
+
+```text
+web-facing action
+  -> translator
+  -> internal engine representation
+  -> dispatcher / kernel
 ```
 
-**Code size:** ~4,000,000 lines
+This crate is not the same thing as the kernel, dispatcher, or renderer. It is a compatibility layer that feeds them.
 
-### ✅ Slate (Wine-like Translation)
+## Integration Expectations
 
-```rust
-// Pure translation to AIS
-fn translate_create_element(node: NodeId, tag: &str) -> Vec<AtomicInstruction> {
-    vec![
-        AtomicInstruction::CreateNode { id: node },
-        AtomicInstruction::SetNodeType { id: node, node_type: parse_tag(tag) },
-    ]
-}
-```
+A healthy `slate-webapi` integration should make these questions easy to answer:
 
-**Code size:** ~6,500 lines
+- What web-facing operation entered the crate?
+- What internal call or data structure was produced?
+- Can the dispatcher consume that output?
+- Can the kernel apply the resulting instructions?
+- Is unsupported behavior reported clearly?
 
-**Result: 600x smaller codebase**
+## Practical Notes
 
-## Implemented APIs
+- Treat API completeness claims cautiously and verify against the code.
+- Prefer the root documentation for system-wide architecture.
+- Use this crate’s source when you need the exact public surface.
 
-### Core APIs (✅ Complete)
+## Documentation Rule
 
-- **DOM API**: Document, Element, Node interfaces with full manipulation methods
-- **Console API**: log, error, warn, info, debug, trace, assert, clear, count, time/timeEnd
-- **Event API**: addEventListener, removeEventListener, dispatchEvent
-- **Timer API**: setTimeout, clearTimeout, setInterval, clearInterval, requestAnimationFrame
-- **Storage API**: localStorage and sessionStorage with full CRUD operations
-- **URL API**: URL and URLSearchParams constructors
-- **Performance API**: performance.now(), mark(), measure()
-- **Crypto API**: getRandomValues(), randomUUID()
+Do not document a Web API as complete simply because a module name exists. Document exact behavior: parser, translator, helper type, demo path, or test coverage.
 
-### Network APIs (🔄 Partial)
+## Related Documents
 
-- **Fetch API**: Basic structure (needs integration with slate-network)
-- **WebSocket API**: Basic structure (needs implementation)
+- [Root README](../../README.md)
+- [Architecture](../../ARCHITECTURE.md)
+- [Capabilities](../../CAPABILITIES.md)
 
-### Graphics APIs (🔄 Partial)
-
-- **Canvas 2D API**: Basic drawing methods (needs full implementation)
+## Module Notes
 
-### Device APIs (🔄 Partial)
+### `translator`
 
-- **Geolocation API**: Basic structure
-- **Notification API**: Basic structure
+The translator module is the core compatibility-oriented adapter. Documentation should describe what it accepts and emits rather than implying a complete browser API surface.
 
-## Usage
-
-### Basic Example
+### `canvas`
 
-```rust
-use slate_webapi::WebApiRuntime;
+Canvas-related helpers should be documented as helper or compatibility code unless a full drawing API is tested through the engine pipeline.
 
-// Create runtime with all Web APIs installed
-let mut runtime = WebApiRuntime::new()?;
+### `forms`
 
-// Execute JavaScript code
-runtime.eval(r#"
-    const div = document.createElement('div');
-    div.setAttribute('id', 'main');
-    div.style.setProperty('background-color', 'blue');
-    
-    const text = document.createTextNode('Hello, Slate!');
-    div.appendChild(text);
-    
-    console.log('Element created:', div);
-"#)?;
-
-// Drain WebCalls for processing by dispatcher
-let web_calls = runtime.drain_web_calls();
-```
-
-### Integration with Slate Engine
+Forms support should be described by exact validation or helper behavior. Do not infer form submission, navigation, browser UI, or accessibility behavior from validation helpers alone.
 
-```rust
-use slate_webapi::WebApiRuntime;
-use slate_dispatcher::Dispatcher;
-
-let mut runtime = WebApiRuntime::new()?;
-let mut dispatcher = Dispatcher::new();
-
-// Execute JavaScript
-runtime.eval("/* your JS code */")?;
-
-// Get WebCalls and dispatch to AIS
-let calls = runtime.drain_web_calls();
-for call in calls {
-    let ais_stream = dispatcher.dispatch(call.as_web_call());
-    // Process AIS stream...
-}
-```
-
-## API Coverage
-
-### Document Object Model
-
-```javascript
-// Element creation
-const div = document.createElement('div');
-const text = document.createTextNode('Hello');
-
-// DOM manipulation
-parent.appendChild(child);
-parent.removeChild(child);
-parent.insertBefore(newChild, refChild);
-
-// Attributes
-element.setAttribute('id', 'main');
-element.getAttribute('id');
-element.removeAttribute('class');
-
-// Classes
-element.classList.add('active');
-
-// Styles
-element.style.setProperty('color', 'red');
-
-// Queries
-document.getElementById('main');
-document.querySelector('.class');
-document.querySelectorAll('div');
-```
-
-### Console
-
-```javascript
-console.log('message', value);
-console.error('error message');
-console.warn('warning');
-console.info('info');
-console.debug('debug');
-console.trace();
-console.assert(condition, 'message');
-console.clear();
-console.count('label');
-console.time('timer');
-console.timeEnd('timer');
-```
-
-### Storage
-
-```javascript
-// localStorage
-localStorage.setItem('key', 'value');
-const value = localStorage.getItem('key');
-localStorage.removeItem('key');
-localStorage.clear();
-
-// sessionStorage (same API)
-sessionStorage.setItem('key', 'value');
-```
-
-### Timers
-
-```javascript
-const timeoutId = setTimeout(() => {
-    console.log('Delayed');
-}, 1000);
-clearTimeout(timeoutId);
-
-const intervalId = setInterval(() => {
-    console.log('Repeating');
-}, 1000);
-clearInterval(intervalId);
-
-requestAnimationFrame((timestamp) => {
-    console.log('Frame:', timestamp);
-});
-```
-
-### Performance
-
-```javascript
-const start = performance.now();
-// ... do work ...
-const end = performance.now();
-console.log('Took:', end - start, 'ms');
-
-performance.mark('start');
-// ... do work ...
-performance.mark('end');
-performance.measure('work', 'start', 'end');
-```
-
-### Crypto
-
-```javascript
-const uuid = crypto.randomUUID();
-console.log(uuid); // "550e8400-e29b-41d4-a716-446655440000"
-
-const array = new Uint8Array(16);
-crypto.getRandomValues(array);
-```
-
-## Implementation Status
-
-| API Category | Status | Notes |
-|-------------|--------|-------|
-| DOM Core | ✅ Complete | Full CRUD operations |
-| Console | ✅ Complete | All standard methods |
-| Events | 🔄 Partial | Structure ready, needs slate-events integration |
-| Timers | 🔄 Partial | Structure ready, needs event loop |
-| Storage | ✅ Complete | In-memory implementation |
-| Fetch | 🔄 Partial | Needs slate-network integration |
-| Canvas 2D | 🔄 Partial | Basic methods, needs full implementation |
-| WebGL | ❌ Planned | Phase 4 |
-| WebRTC | ❌ Planned | Phase 4 |
-| Service Workers | ❌ Planned | Phase 4 |
-| IndexedDB | ❌ Planned | Phase 4 |
-
-## Architecture Details
-
-### Polyfill Layer
-
-The crate uses a two-layer approach:
-
-1. **Low-level bindings**: Rust functions registered as `__slate_*` in JavaScript
-2. **High-level polyfills**: JavaScript wrappers that provide standard Web API interfaces
-
-This allows:
-- Zero-copy data transfer between JS and Rust
-- Standard Web API surface for JavaScript code
-- Efficient WebCall generation
-
-### WebCall Generation
-
-All DOM operations generate `OwnedWebCall` instances that are:
-- Collected in a buffer during JavaScript execution
-- Drained after execution completes
-- Converted to `WebCall` for dispatcher processing
-- Decomposed into Atomic Instructions (AIS)
-
-### Determinism
-
-The Web API layer maintains Slate's determinism guarantees:
-- No wall clock access (use performance.now() which is deterministic)
-- No direct state mutation (everything goes through WebCalls)
-- Reproducible execution from same input sequence
-
-## Future Work
-
-### Phase 4 Priorities
-
-1. **Complete Event System**: Full integration with slate-events
-2. **Timer Implementation**: Event loop with proper scheduling
-3. **Fetch Integration**: Connect to slate-network for real HTTP
-4. **Canvas 2D**: Complete implementation with path operations
-5. **WebGL**: OpenGL ES 2.0/3.0 compatibility
-6. **WebAssembly**: Wasm module loading and execution
-
-### Additional APIs
-
-- XMLHttpRequest (legacy compatibility)
-- WebSocket (real-time communication)
-- IndexedDB (client-side database)
-- Service Workers (offline support)
-- Web Workers (multi-threading)
-- WebRTC (peer-to-peer)
-- Media APIs (audio/video)
-
-## Testing
+### `svg`
+
+SVG support should be described by exact parsed or rendered primitives. Avoid saying “SVG support” without naming which shapes, attributes, transforms, or output paths are covered.
+
+## Verification Commands
+
+Useful commands when changing this crate:
 
 ```bash
-# Run all tests
+cargo check -p slate-webapi
 cargo test -p slate-webapi
-
-# Run specific test
-cargo test -p slate-webapi test_dom_operations
-
-# Run with output
-cargo test -p slate-webapi -- --nocapture
+cargo run -p slate-kernel --bin slate-phase4-demo
+python3 scripts/browser_engine_benchmark.py --profile debug --iterations 1 --warmups 0
 ```
 
-## Contributing
-
-When adding new Web APIs:
-
-1. Create a new module in `src/` (e.g., `src/webrtc.rs`)
-2. Implement low-level bindings using `NativeFunction`
-3. Add high-level polyfill in `bindings.rs`
-4. Update `lib.rs` to export the module
-5. Add tests in the module
-6. Update this README
-
-## License
-
-Apache-2.0 OR MIT, at your option.
+Use the crate-level commands for compile/test confidence and the demo/harness commands for integration confidence.
